@@ -1,0 +1,17 @@
+﻿apiVersion: apiextensions.k8s.io/v1beta1
+kind: CustomResourceDefinition
+metadata:
+  name: tests.k8s.neuroglia.io #must be the concatenation of the plural and the group parameters supplied in your CRD class ({plural}.{group})
+spec:
+  group: k8s.neuroglia.io #must be the same group than provided in your CRD class, in the ApiVersion parameter ({group}/{version})
+  subresources: #add this block if your CRD uses a status, otherwise remove
+    status: {}
+  versions:
+    - name: v1alpha1 #must be the same version than provided in your CRD class, in the ApiVersion parameter ({group}/{version})
+      served: true
+      storage: true
+  scope: Namespaced #add this line if the CRD is to be namespaced, otherwise remove
+  names:
+    plural: tests #must be the same than provided in your CRD class
+    singular: test #should be the singularized version of the plural value supplied in your CRD class
+    kind: Test #must be the same than provided in your CRD class

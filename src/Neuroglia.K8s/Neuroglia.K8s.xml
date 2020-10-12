@@ -1,0 +1,435 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Neuroglia.K8s</name>
+    </assembly>
+    <members>
+        <member name="T:Neuroglia.K8s.CustomResource">
+            <summary>
+            Represents an instance of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResource.#ctor(Neuroglia.K8s.ICustomResourceDefinition)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.CustomResource"/>
+            </summary>
+            <param name="definition">The <see cref="T:Neuroglia.K8s.CustomResource"/>'s definition</param>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResource.Definition">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResource.Metadata">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResource.Validate">
+            <summary>
+            Validates the <see cref="T:Neuroglia.K8s.CustomResource"/>
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.CustomResource`1">
+            <summary>
+            Represents an instance of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>
+            </summary>
+            <typeparam name="TSpec">The type of the custom object's specification</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResource`1.#ctor(Neuroglia.K8s.ICustomResourceDefinition)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.CustomResource"/>
+            </summary>
+            <param name="definition">The <see cref="T:Neuroglia.K8s.CustomResource"/>'s definition</param>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResource`1.Spec">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.CustomResource`2">
+            <summary>
+            Represents an instance of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>
+            </summary>
+            <typeparam name="TSpec">The type of the custom object's specification</typeparam>
+            <typeparam name="TStatus">The type of the custom object's status</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResource`2.#ctor(Neuroglia.K8s.ICustomResourceDefinition)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.CustomResource"/>
+            </summary>
+            <param name="definition">The <see cref="T:Neuroglia.K8s.CustomResource"/>'s definition</param>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResource`2.Status">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.CustomResourceDefinition">
+            <summary>
+            Represents a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>.
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceDefinition.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.CustomResourceDefinition"/>.
+            </summary>
+            <param name="apiVersion">The <see cref="T:Neuroglia.K8s.CustomResourceDefinition"/>'s api version.</param>
+            <param name="kind">The <see cref="T:Neuroglia.K8s.CustomResourceDefinition"/>'s kind.</param>
+            <param name="plural">The <see cref="T:Neuroglia.K8s.CustomResourceDefinition"/>'s plural name.</param>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceDefinition.ApiVersion">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceDefinition.Kind">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceDefinition.Plural">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceDefinition.Group">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceDefinition.Version">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.CustomResourceEventDelegate`1">
+            <summary>
+            Represents the delegate to invoke whenever a new Kubernetes event for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type has been received
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen Kubernetes events for</typeparam>
+            <param name="e">The type of the watch event</param>
+            <param name="resource">The <see cref="T:Neuroglia.K8s.ICustomResource"/></param>
+        </member>
+        <member name="T:Neuroglia.K8s.CustomResourceEventWatcher`1">
+            <summary>
+            Represents the default implementation of the <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcher`1"/> interface.
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen the Kubernetes events for.</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceEventWatcher`1.#ctor(Microsoft.Extensions.Logging.ILogger{Neuroglia.K8s.CustomResourceEventWatcher{`0}},k8s.IKubernetes,Neuroglia.K8s.ICustomResourceDefinition,System.String,Neuroglia.K8s.CustomResourceEventDelegate{`0})">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcher`1"/>.
+            </summary>
+            <param name="logger">The service used to perform logging</param>
+            <param name="kubernetesClient">The service used to communicate with Kubernetes.</param>
+            <param name="resourceDefinition">The <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/> of the <see cref="T:Neuroglia.K8s.ICustomResource"/> type to to listen the Kubernetes events for.</param>
+            <param name="namespaceProperty">The namespace in which to listen for Kubernetes events for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type. If null or empty, the controller will listen for cluster-wide events instead.</param>
+            <param name="eventHandler">The <see cref="T:Neuroglia.K8s.CustomResourceEventDelegate`1"/> to invoke whenever a Kubernetes event for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type is received.</param>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceEventWatcher`1.Logger">
+            <summary>
+            Gets the service used to perform logging
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceEventWatcher`1.KubernetesClient">
+            <summary>
+            Gets the service used to communicate with Kubernetes
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceEventWatcher`1.ResourceDefinition">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/> of the <see cref="T:Neuroglia.K8s.ICustomResource"/> type to to listen the Kubernetes events for.
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceEventWatcher`1.EventHandler">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.CustomResourceEventDelegate`1"/> to invoke whenever a Kubernetes event for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type is received.
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceEventWatcher`1.Namespace">
+            <summary>
+            Gets the namespace in which to listen for Kubernetes events for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type. If null or empty, the controller will listen for cluster-wide events instead.
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceEventWatcher`1.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceEventWatcher`1.ListenAsync(System.Threading.CancellationToken)">
+            <summary>
+            Starts listening for Kubernetes events concerning the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
+            </summary>
+            <param name="stoppingToken">A <see cref="T:System.Threading.CancellationToken"/> used to stop listening</param>
+            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceEventWatcher`1.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceEventWatcher`1.Dispose(System.Boolean)">
+            <summary>
+            Disposes of the <see cref="T:Neuroglia.K8s.CustomResourceEventWatcher`1"/>
+            </summary>
+            <param name="disposing">A boolean indicating whether or not the <see cref="T:Neuroglia.K8s.CustomResourceEventWatcher`1"/> is being disposed of</param>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceEventWatcher`1.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceEventWatcher`1.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.CustomResourceEventWatcherFactory">
+            <summary>
+            Represents the default implementation of the <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcherFactory"/> interface.
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceEventWatcherFactory.#ctor(System.IServiceProvider)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.CustomResourceEventWatcherFactory"/>.
+            </summary>
+            <param name="serviceProvider">The current <see cref="T:System.IServiceProvider"/>.</param>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResourceEventWatcherFactory.ServiceProvider">
+            <summary>
+            Gets the current <see cref="T:System.IServiceProvider"/>.
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResourceEventWatcherFactory.CreateController``1(Neuroglia.K8s.ICustomResourceDefinition,Neuroglia.K8s.CustomResourceEventDelegate{``0},System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.ICustomResource">
+            <summary>
+            Defines the fundamentals of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see> instance
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ICustomResource.Definition">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResource"/>'s definition
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.ICustomResource`1">
+            <summary>
+            Defines the fundamentals of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see> instance
+            </summary>
+            <typeparam name="TSpec">The type of the <see cref="T:Neuroglia.K8s.ICustomResource"/>'s specification</typeparam>
+        </member>
+        <member name="P:Neuroglia.K8s.ICustomResource`1.Spec">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResource"/>'s specifications.
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.ICustomResource`2">
+            <summary>
+            Defines the fundamentals of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see> instance
+            </summary>
+            <typeparam name="TSpec">The type of the custom object's specification</typeparam>
+            <typeparam name="TStatus">The type of the <see cref="T:Neuroglia.K8s.ICustomResource"/>'s status</typeparam>
+        </member>
+        <member name="P:Neuroglia.K8s.ICustomResource`2.Status">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResource"/>'s status.<para></para>
+            Note that the status sub resource must be enabled in the <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">CRD</see> 
+            as described in the <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/#subresources">Kubernetes documentation</see>
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.ICustomResourceDefinition">
+            <summary>
+            Defines the fundamentals of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ICustomResourceDefinition.ApiVersion">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/>'s api version
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ICustomResourceDefinition.Kind">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/>'s kind
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ICustomResourceDefinition.Plural">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/>'s plural name
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ICustomResourceDefinition.Group">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/>'s group
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ICustomResourceDefinition.Version">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/>'s version
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.ICustomResourceEventWatcher">
+            <summary>
+            Defines the fundamentals of a service used to listen for Kubernetes events about a specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ICustomResourceEventWatcher.ObjectType">
+            <summary>
+            Gets the type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen Kubernetes events for
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ICustomResourceEventWatcher.StartAsync(System.Threading.CancellationToken)">
+            <summary>
+            Starts listening for Kubernetes events concerning the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
+            </summary>
+            <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
+            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.ICustomResourceEventWatcher.StopAsync(System.Threading.CancellationToken)">
+            <summary>
+            Stops listening for Kubernetes events
+            </summary>
+            <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
+            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
+        </member>
+        <member name="T:Neuroglia.K8s.ICustomResourceEventWatcher`1">
+            <summary>
+            Defines the fundamentals of a service used to listen for Kubernetes events about a specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen Kubernetes events for</typeparam>
+        </member>
+        <member name="T:Neuroglia.K8s.ICustomResourceEventWatcherFactory">
+            <summary>
+            Defines the fundamentals of a service used to create new <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcher"/>s.
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ICustomResourceEventWatcherFactory.CreateController``1(Neuroglia.K8s.ICustomResourceDefinition,Neuroglia.K8s.CustomResourceEventDelegate{``0},System.String)">
+            <summary>
+            Creates a new <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcher"/> instance for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type.
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to create a new <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcher"/> for.</typeparam>
+            <param name="resourceDefinition">The <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/> that defines the <see cref="T:Neuroglia.K8s.ICustomResource"/> type to create a new <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcher"/> for.</param>
+            <param name="eventHandler">The <see cref="T:Neuroglia.K8s.CustomResourceEventDelegate`1"/> to invoke whenever a new Kubernetes event for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type has been received.</param>
+            <param name="ns">The namespace in which to listen for Kubernetes events for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type. If null or empty, the controller will listen for cluster-wide events instead.</param>
+            <returns>A new <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcher"/> instance</returns>
+        </member>
+        <member name="T:Neuroglia.K8s.IKubernetesExtensions">
+            <summary>
+            Defines extensions for <see cref="T:k8s.IKubernetes"/>
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.IKubernetesExtensions.CreateNamespacedCustomObjectAsync``1(k8s.IKubernetes,``0,System.String,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Creates a new namespaced custom object of the specified type
+            </summary>
+            <typeparam name="TResource">The type of custom object to create</typeparam>
+            <param name="kubernetes">The extended <see cref="T:k8s.IKubernetes"/></param>
+            <param name="resource">The resource to create</param>
+            <param name="namespaceParameter">The namespace for which to create the specified custom object</param>
+            <param name="pretty">A boolean indicating whether or not the resource should be pretty-printed</param>
+            <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
+            <returns>The newly created resource</returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IKubernetesExtensions.ListNamespacedCustomObjectAsync``1(k8s.IKubernetes,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},System.String,System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Lists namespaced custom objects
+            </summary>
+            <typeparam name="T">The type of custom resource to list</typeparam>
+            <param name="kubernetes">The extended <see cref="T:k8s.IKubernetes"/></param>
+            <param name="group">The custom resource's group name</param>
+            <param name="version">The custom resource's version</param>
+            <param name="namespaceParameter">The custom resource's namespace</param>
+            <param name="plural">The custom resource's plural name. For TPRs this would be lowercase plural kind.</param>
+            <param name="continueParameter">The continue option should be set when retrieving more results from the server.</param>
+            <param name="fieldSelector">A selector to restrict the list of returned objects by their fields. Defaults to everything.</param>
+            <param name="labelSelector">A selector to restrict the list of returned objects by their labels. Defaults to everything.</param>
+            <param name="limit">Limit is a maximum number of responses to return for a list call.</param>
+            <param name="resourceVersion"> When specified with a watch call, shows changes that occur after that particular version of a resource.</param>
+            <param name="timeoutSeconds">Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.</param>
+            <param name="watch"> Watch for changes to the described resources and return them as a stream of add, update, and remove notifications.</param>
+            <param name="pretty">A boolean indicating whether or not to pretty print the output</param>
+            <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
+            <returns>A new <see cref="T:Neuroglia.K8s.KubernetesList`1"/> containing the custom objects of the specified type</returns>
+        </member>
+        <member name="T:Neuroglia.K8s.IServiceCollectionExtensions">
+            <summary>
+            Defines extensions for <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/>s
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddKubernetesClient(Microsoft.Extensions.DependencyInjection.IServiceCollection,k8s.KubernetesClientConfiguration)">
+            <summary>
+            Adds and configures an <see cref="T:k8s.IKubernetes"/> service
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <param name="configuration">The <see cref="T:k8s.KubernetesClientConfiguration"/> to use</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddKubernetesClient(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds <see cref="T:k8s.IKubernetes"/> service with an <see cref="M:k8s.KubernetesClientConfiguration.InClusterConfig"/>
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddCustomResourceEventWatcherFactory``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds an <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcherFactory"/> service of the specified type
+            </summary>
+            <typeparam name="TFactory">The type of <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcherFactory"/> to use</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddCustomResourceEventWatcherFactory(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds the default <see cref="T:Neuroglia.K8s.ICustomResourceEventWatcherFactory"/>
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="T:Neuroglia.K8s.KubernetesDefaults">
+            <summary>
+            Exposes constants about Kubernetes defaults
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.KubernetesDefaults.ApiVersions">
+            <summary>
+            Exposes default Kubernetes API versions
+            </summary>
+        </member>
+        <member name="F:Neuroglia.K8s.KubernetesDefaults.ApiVersions.V1">
+            <summary>
+            Gets the 'v1' API version
+            </summary>
+        </member>
+        <member name="F:Neuroglia.K8s.KubernetesDefaults.ApiVersions.AppsV1">
+            <summary>
+            Gets the 'apps/v1' API version
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.KubernetesDefaults.Kinds">
+            <summary>
+            Exposes constants about Kubernetes default Kinds
+            </summary>
+        </member>
+        <member name="F:Neuroglia.K8s.KubernetesDefaults.Kinds.Deployment">
+            <summary>
+            Gets the kind of the 'Deployment' object
+            </summary>
+        </member>
+        <member name="F:Neuroglia.K8s.KubernetesDefaults.Kinds.Service">
+            <summary>
+            Gets the kind of the 'Service' object
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.KubernetesDefaults.ServiceTypes">
+            <summary>
+            Exposes default Kubernetes service types
+            </summary>
+        </member>
+        <member name="F:Neuroglia.K8s.KubernetesDefaults.ServiceTypes.ExternalName">
+            <summary>
+            Gets the 'ExternalName' service type
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.KubernetesList`1">
+            <summary>
+            Represents a list of <see cref="T:Neuroglia.K8s.ICustomResource"/>s
+            </summary>
+            <typeparam name="T">The type of <see cref="T:k8s.IKubernetesObject"/>s contained by the <see cref="T:Neuroglia.K8s.KubernetesList`1"/></typeparam>
+        </member>
+        <member name="P:Neuroglia.K8s.KubernetesList`1.Items">
+            <summary>
+            Gets/sets an <see cref="T:System.Collections.Generic.IList`1"/> containing the <see cref="T:k8s.IKubernetesObject"/>s the <see cref="T:Neuroglia.K8s.KubernetesList`1"/> is made out of
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.KubernetesObject`1">
+            <summary>
+            Represents the base class for all generic <see cref="T:k8s.IKubernetesObject"/>s
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.KubernetesObject`1.ApiVersion">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.KubernetesObject`1.Kind">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.KubernetesObject`1.Metadata">
+            <inheritdoc/>
+        </member>
+    </members>
+</doc>
