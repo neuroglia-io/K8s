@@ -108,7 +108,7 @@ spec:
 kubectl apply -f test-crd.yaml
 ```
 
-### Creating a new Custom Resource programatically (thanks to the IKubernetes C# client)
+### Creating a new Custom Resource programatically ([thanks to the IKubernetes C# client](https://github.com/kubernetes-client/csharp))
 
 ```c#
 var kube = new Kubernetes(KubernetesClientConfiguration.InClusterConfig());
