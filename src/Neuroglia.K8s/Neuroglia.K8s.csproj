@@ -8,15 +8,20 @@
     <NeutralLanguage>en</NeutralLanguage>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
+    <Title>Neuroglia K8s</Title>
     <Description>A library that extends the official Kubernetes client.</Description>
     <PackageTags>neuroglia, kubernetes, k8s, docker, container</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/neuroglia-io/K8s</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/neuroglia-io/K8s</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>logo_white.jpg</PackageIcon>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <PropertyGroup>
     <DocumentationFile>Neuroglia.K8s.xml</DocumentationFile>
   </PropertyGroup>
 
@@ -27,6 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="..\..\..\..\Users\User\Pictures\logo_white.jpg">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="..\..\..\Neuroglia.Istio\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
