@@ -3,7 +3,7 @@
 
 # Usage
 
-[Nuget Package](https://www.nuget.org/packages/KubernetesClient/)
+[Nuget Package](https://www.nuget.org/packages/Neuroglia.K8s/)
 
 ```
   dotnet add package Neuroglia.K8s
