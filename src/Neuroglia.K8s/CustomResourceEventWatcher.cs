@@ -86,7 +86,6 @@ namespace Neuroglia.K8s
         {
             try
             {
-                this.Logger.LogInformation("Started listening for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
                 HttpOperationResponse<object> operationResponse;
                 if (!string.IsNullOrWhiteSpace(this.Namespace))
                     operationResponse = await this.KubernetesClient.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
@@ -94,10 +93,25 @@ namespace Neuroglia.K8s
                     operationResponse = await this.KubernetesClient.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    using (operationResponse.Watch<TResource, object>((type, item) => this.EventHandler(type, item), 
-                        ex => this.Logger.LogError($"An error occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace, ex.ToString()), 
-                        () => this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace} has been closed.")))
+                    this.Logger.LogInformation("Started listening for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+                    bool reconnect = false;
+                    using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>((type, item) => this.EventHandler(type, item),
+                        ex =>
+                        {
+                            reconnect = true;
+                            this.Logger.LogError($"An error occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace, ex.ToString());
+                        },
+                        () =>
+                        {
+                            reconnect = true;
+                            this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace} has been closed.");
+                        }))
                     {
+                        if (reconnect)
+                        {
+                            reconnect = false;
+                            continue;
+                        }
                         while (!stoppingToken.IsCancellationRequested)
                         {
                             await Task.Delay(100);

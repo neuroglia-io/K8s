@@ -13,12 +13,12 @@
     <PackageTags>neuroglia, kubernetes, k8s, docker, container</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0</Version>
+    <Version>1.0.0.1</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/neuroglia-io/K8s</PackageProjectUrl>
     <RepositoryUrl>https://github.com/neuroglia-io/K8s</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageIcon>logo_white.jpg</PackageIcon>
+    <PackageIcon>neurologo.jpg</PackageIcon>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -32,11 +32,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\..\..\Users\User\Pictures\logo_white.jpg">
+    <None Include="..\..\LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
-    <None Include="..\..\..\Neuroglia.Istio\LICENSE">
+    <None Include="..\..\neurologo.jpg">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
