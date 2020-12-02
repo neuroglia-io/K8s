@@ -84,50 +84,51 @@ namespace Neuroglia.K8s
         /// <returns>A new awaitable <see cref="Task"/></returns>
         protected virtual async Task ListenAsync(CancellationToken stoppingToken)
         {
-            try
+            while (!stoppingToken.IsCancellationRequested)
             {
                 HttpOperationResponse<object> operationResponse;
-                if (!string.IsNullOrWhiteSpace(this.Namespace))
-                    operationResponse = await this.KubernetesClient.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
-                else
-                    operationResponse = await this.KubernetesClient.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
-                while (!stoppingToken.IsCancellationRequested)
+                try
                 {
-                    this.Logger.LogInformation("Started listening for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
-                    bool reconnect = false;
-                    using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>((type, item) => this.EventHandler(type, item),
-                        ex =>
-                        {
-                            reconnect = true;
-                            this.Logger.LogError($"An error occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace, ex.ToString());
-                        },
-                        () =>
-                        {
-                            reconnect = true;
-                            this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace} has been closed.");
-                        }))
+                    if (!string.IsNullOrWhiteSpace(this.Namespace))
+                        operationResponse = await this.KubernetesClient.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
+                    else
+                        operationResponse = await this.KubernetesClient.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
+                   
+                    while (!stoppingToken.IsCancellationRequested)
                     {
-                        if (reconnect)
+                        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+                        this.Logger.LogInformation("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+                        using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>((type, item) => this.EventHandler(type, item),
+                            ex =>
+                            {
+                                cancellationTokenSource.Cancel();
+                                this.Logger.LogError($"An exception occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace, ex.ToString());
+                            },
+                            () =>
+                            {
+                                cancellationTokenSource.Cancel();
+                                this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+                            }))
                         {
-                            reconnect = false;
-                            continue;
-                        }
-                        while (!stoppingToken.IsCancellationRequested)
-                        {
-                            await Task.Delay(100);
+                            this.Logger.LogInformation("Started listening for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+                            while (!stoppingToken.IsCancellationRequested
+                                && !cancellationTokenSource.IsCancellationRequested)
+                            {
+
+                            }
                         }
                     }
                 }
-                this.Logger.LogInformation("Stopped listening for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+                catch (HttpOperationException ex)
+                {
+                    this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}. The server responded with a '{{statusCode}}' status code:{Environment.NewLine}{{responseContent}}. Reconnecting...", this.ResourceDefinition.ApiVersion, ex.Response.StatusCode, ex.Response.Content);
+                }
+                catch (Exception ex)
+                {
+                    this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}:{Environment.NewLine}{{ex}}. Reconnecting...", this.ResourceDefinition.ApiVersion, ex.ToString());
+                }
             }
-            catch(HttpOperationException ex)
-            {
-                this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}. The server responded with a '{{statusCode}}' status code:{Environment.NewLine}{{responseContent}}", this.ResourceDefinition.ApiVersion, ex.Response.StatusCode, ex.Response.Content);
-            }
-            catch(Exception ex)
-            {
-                this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}:{Environment.NewLine}{{ex}}", this.ResourceDefinition.ApiVersion, ex.ToString());
-            }
+            this.Logger.LogInformation("Stopped listening for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
         }
 
         /// <inheritdoc/>
