@@ -89,13 +89,12 @@ namespace Neuroglia.K8s
                 HttpOperationResponse<object> operationResponse;
                 try
                 {
-                    if (!string.IsNullOrWhiteSpace(this.Namespace))
-                        operationResponse = await this.KubernetesClient.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
-                    else
-                        operationResponse = await this.KubernetesClient.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
-                   
                     while (!stoppingToken.IsCancellationRequested)
                     {
+                        if (!string.IsNullOrWhiteSpace(this.Namespace))
+                            operationResponse = await this.KubernetesClient.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
+                        else
+                            operationResponse = await this.KubernetesClient.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
                         CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
                         this.Logger.LogInformation("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
                         using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>((type, item) => this.EventHandler(type, item),
