@@ -25,7 +25,7 @@ namespace Neuroglia.K8s
         public static async Task<TResource> CreateNamespacedCustomObjectAsync<TResource>(this IKubernetes kubernetes, TResource resource, string namespaceParameter, bool pretty = false, CancellationToken cancellationToken = default)
             where TResource : class, ICustomResource
         {
-            return await kubernetes.CreateNamespacedCustomObjectAsync(resource, resource.Definition.Group, resource.Definition.Version, namespaceParameter, resource.Definition.Plural, pretty ? "true" : null, cancellationToken) as TResource;
+            return await kubernetes.CreateNamespacedCustomObjectAsync(resource, resource.Definition.Group, resource.Definition.Version, namespaceParameter, resource.Definition.Plural, null, null, pretty ? "true" : null, cancellationToken) as TResource;
         }
 
         /// <summary>
