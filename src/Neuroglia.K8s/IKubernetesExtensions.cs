@@ -29,6 +29,21 @@ namespace Neuroglia.K8s
         }
 
         /// <summary>
+        /// Creates a new namespaced custom object of the specified type
+        /// </summary>
+        /// <typeparam name="TResource">The type of custom object to create</typeparam>
+        /// <param name="kubernetes">The extended <see cref="IKubernetes"/></param>
+        /// <param name="resource">The resource to create</param>
+        /// <param name="pretty">A boolean indicating whether or not the resource should be pretty-printed</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/></param>
+        /// <returns>The newly created resource</returns>
+        public static async Task<TResource> CreateClusterCustomObjectAsync<TResource>(this IKubernetes kubernetes, TResource resource, bool pretty = false, CancellationToken cancellationToken = default)
+            where TResource : class, ICustomResource
+        {
+            return await kubernetes.CreateClusterCustomObjectAsync(resource, resource.Definition.Group, resource.Definition.Version, resource.Definition.Plural, null, null, pretty ? "true" : null, cancellationToken) as TResource;
+        }
+
+        /// <summary>
         /// Lists namespaced custom objects
         /// </summary>
         /// <typeparam name="T">The type of custom resource to list</typeparam>

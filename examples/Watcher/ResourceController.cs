@@ -1,6 +1,5 @@
 ﻿using k8s;
 using k8s.Models;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Neuroglia.K8s;
@@ -15,14 +14,12 @@ namespace Watcher
         : BackgroundService
     {
 
-        private Task _ExecutingTask;
-
-        public ResourceController(IServiceProvider serviceProvider, ILogger<ResourceController> logger, IKubernetes kubernetesClient)
+        public ResourceController(IServiceProvider serviceProvider, ILogger<ResourceController> logger, IKubernetes kubernetesClient, ICustomResourceWatcher<Test> crdWatcher)
         {
             this.ServiceProvider = serviceProvider;
             this.Logger = logger;
             this.KubernetesClient = kubernetesClient;
-            this.CrdWatcher = ActivatorUtilities.CreateInstance<ICustomResourceEventWatcher<Test>>(this.ServiceProvider, CustomResourceDefinitions.Test, this.Namespace, new CustomResourceEventDelegate<Test>(this.OnTestEvent));
+            this.CrdWatcher = crdWatcher;
         }
 
         protected IServiceProvider ServiceProvider { get; }
@@ -31,19 +28,17 @@ namespace Watcher
 
         protected IKubernetes KubernetesClient { get; }
 
-        protected ICustomResourceEventWatcher CrdWatcher { get; }
-
-        protected string Namespace => "test";
+        protected ICustomResourceWatcher<Test> CrdWatcher { get; }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            this._ExecutingTask = this.CrdWatcher.StartAsync(stoppingToken);
-            return this.KubernetesClient.CreateNamespacedCustomObjectAsync(new Test(new V1ObjectMeta() { Name = "test" }, new TestSpec() { Value = "Hello, world" }), this.Namespace);
+            this.CrdWatcher.Subscribe(this.OnTestEvent);
+            return this.KubernetesClient.CreateNamespacedCustomObjectAsync(new Test(new V1ObjectMeta() { Name = "test" }, new TestSpec() { Value = "Hello, world" }), "test");
         }
 
-        protected void OnTestEvent(WatchEventType e, Test test)
+        protected void OnTestEvent(IResourceEvent<Test> e)
         {
-            switch (e)
+            switch (e.Type)
             {
                 case WatchEventType.Added:
                     this.Logger.LogInformation("Test added");

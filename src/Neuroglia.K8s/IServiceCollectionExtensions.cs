@@ -1,5 +1,6 @@
 ﻿using k8s;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Neuroglia.K8s
 {
@@ -18,7 +19,7 @@ namespace Neuroglia.K8s
         /// <returns>The configured <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddKubernetesClient(this IServiceCollection services, KubernetesClientConfiguration configuration)
         {
-            services.AddSingleton<IKubernetes>(new Kubernetes(configuration));
+            services.TryAddSingleton<IKubernetes>(new Kubernetes(configuration));
             return services;
         }
 
@@ -34,27 +35,31 @@ namespace Neuroglia.K8s
         }
 
         /// <summary>
-        /// Adds an <see cref="ICustomResourceEventWatcherFactory"/> service of the specified type
+        /// Adds an <see cref="ICustomResourceWatcher"/> for the specified custom resource type
         /// </summary>
-        /// <typeparam name="TFactory">The type of <see cref="ICustomResourceEventWatcherFactory"/> to use</typeparam>
+        /// <typeparam name="TResource">The type of the custom resource to watch</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to configure</param>
+        /// <param name="namespace">The namespace of the custom resources to watch</param>
         /// <returns>The configured <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddCustomResourceEventWatcherFactory<TFactory>(this IServiceCollection services)
-            where TFactory : class, ICustomResourceEventWatcherFactory
+        public static IServiceCollection AddCustomResourceWatcher<TResource>(this IServiceCollection services, string @namespace)
+            where TResource : ICustomResource, new()
         {
-            services.AddSingleton<ICustomResourceEventWatcherFactory, TFactory>();
+            if(!string.IsNullOrWhiteSpace(@namespace))
+                services.TryAddSingleton<ICustomResourceNamespace<TResource>>(new CustomResourceNamespace<TResource>(@namespace));
+            services.TryAddSingleton(typeof(ICustomResourceWatcher<>), typeof(CustomResourceWatcher<>));
             return services;
         }
 
         /// <summary>
-        /// Adds the default <see cref="ICustomResourceEventWatcherFactory"/>
+        /// Adds an <see cref="ICustomResourceWatcher"/> for the specified custom resource type
         /// </summary>
+        /// <typeparam name="TResource">The type of the custom resource to watch</typeparam>
         /// <param name="services">The <see cref="IServiceCollection"/> to configure</param>
         /// <returns>The configured <see cref="IServiceCollection"/></returns>
-        public static IServiceCollection AddCustomResourceEventWatcherFactory(this IServiceCollection services)
+        public static IServiceCollection AddCustomResourceWatcher<TResource>(this IServiceCollection services)
+            where TResource : ICustomResource, new()
         {
-            services.AddCustomResourceEventWatcherFactory<CustomResourceEventWatcherFactory>();
-            return services;
+            return services.AddCustomResourceWatcher<TResource>(null);
         }
 
     }

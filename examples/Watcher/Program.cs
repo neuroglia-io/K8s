@@ -1,7 +1,9 @@
 ﻿using k8s;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Neuroglia.K8s;
 using System.Threading.Tasks;
+using Watcher.Resources;
 
 namespace Watcher
 {
@@ -24,6 +26,7 @@ namespace Watcher
                 {
                     services.AddLogging();
                     services.AddSingleton<IKubernetes>(new Kubernetes(KubernetesClientConfiguration.InClusterConfig()));
+                    services.AddCustomResourceWatcher<Test>("test");
                     services.AddHostedService<ResourceController>();
                 });
         }

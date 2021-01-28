@@ -6,14 +6,14 @@
     <Company>Neuroglia SPRL</Company>
     <Copyright>Copyright © 2020 - Neuroglia SPRL. All rights reserved</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyVersion>1.0.0.2</AssemblyVersion>
-    <FileVersion>1.0.0.2</FileVersion>
+    <AssemblyVersion>1.0.0.5</AssemblyVersion>
+    <FileVersion>1.0.0.5</FileVersion>
     <Title>Neuroglia K8s</Title>
     <Description>A library that extends the official Kubernetes client.</Description>
     <PackageTags>neuroglia, kubernetes, k8s, docker, container</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0.4</Version>
+    <Version>1.0.0.5</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/neuroglia-io/K8s</PackageProjectUrl>
     <RepositoryUrl>https://github.com/neuroglia-io/K8s</RepositoryUrl>
@@ -26,13 +26,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="KubernetesClient" Version="4.0.7" />
+    <PackageReference Include="KubernetesClient" Version="4.0.9" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\..\LICENSE">
+    <None Include="LICENSE">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>

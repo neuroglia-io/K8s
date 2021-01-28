@@ -8,14 +8,14 @@ namespace Neuroglia.K8s
     /// <summary>
     /// Defines the fundamentals of a service used to listen for Kubernetes events about a specified <see cref="ICustomResource"/> type
     /// </summary>
-    public interface ICustomResourceEventWatcher
+    public interface ICustomResourceWatcher
         : IDisposable, IAsyncDisposable
     {
 
         /// <summary>
         /// Gets the type of <see cref="ICustomResource"/> to listen Kubernetes events for
         /// </summary>
-        Type ObjectType { get; }
+        Type ResourceType { get; }
 
         /// <summary>
         /// Starts listening for Kubernetes events concerning the specified <see cref="ICustomResource"/> type
@@ -37,9 +37,9 @@ namespace Neuroglia.K8s
     /// Defines the fundamentals of a service used to listen for Kubernetes events about a specified <see cref="ICustomResource"/> type
     /// </summary>
     /// <typeparam name="TResource">The type of <see cref="ICustomResource"/> to listen Kubernetes events for</typeparam>
-    public interface ICustomResourceEventWatcher<TResource>
-        : ICustomResourceEventWatcher
-        where TResource : ICustomResource
+    public interface ICustomResourceWatcher<TResource>
+        : ICustomResourceWatcher, IObservable<IResourceEvent<TResource>>
+        where TResource : ICustomResource, new()
     {
 
 

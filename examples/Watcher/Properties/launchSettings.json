@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Watcher": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}

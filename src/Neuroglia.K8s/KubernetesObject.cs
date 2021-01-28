@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 
 namespace Neuroglia.K8s
 {
+
     /// <summary>
     /// Represents the base class for all generic <see cref="IKubernetesObject"/>s
     /// </summary>
