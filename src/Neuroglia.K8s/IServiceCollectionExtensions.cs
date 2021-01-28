@@ -42,11 +42,11 @@ namespace Neuroglia.K8s
         /// <param name="namespace">The namespace of the custom resources to watch</param>
         /// <returns>The configured <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddCustomResourceWatcher<TResource>(this IServiceCollection services, string @namespace)
-            where TResource : ICustomResource, new()
+            where TResource : class, ICustomResource, new()
         {
             if(!string.IsNullOrWhiteSpace(@namespace))
                 services.TryAddSingleton<ICustomResourceNamespace<TResource>>(new CustomResourceNamespace<TResource>(@namespace));
-            services.TryAddSingleton(typeof(ICustomResourceWatcher<>), typeof(CustomResourceWatcher<>));
+            services.TryAddSingleton(typeof(ICustomResourceWatcher<TResource>), typeof(CustomResourceWatcher<TResource>));
             return services;
         }
 
@@ -57,7 +57,7 @@ namespace Neuroglia.K8s
         /// <param name="services">The <see cref="IServiceCollection"/> to configure</param>
         /// <returns>The configured <see cref="IServiceCollection"/></returns>
         public static IServiceCollection AddCustomResourceWatcher<TResource>(this IServiceCollection services)
-            where TResource : ICustomResource, new()
+            where TResource : class, ICustomResource, new()
         {
             return services.AddCustomResourceWatcher<TResource>(null);
         }

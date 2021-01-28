@@ -85,14 +85,6 @@
         <member name="P:Neuroglia.K8s.CustomResourceDefinition.Version">
             <inheritdoc/>
         </member>
-        <member name="T:Neuroglia.K8s.CustomResourceEventDelegate`1">
-            <summary>
-            Represents the delegate to invoke whenever a new Kubernetes event for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type has been received
-            </summary>
-            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen Kubernetes events for</typeparam>
-            <param name="e">The type of the watch event</param>
-            <param name="resource">The <see cref="T:Neuroglia.K8s.ICustomResource"/></param>
-        </member>
         <member name="T:Neuroglia.K8s.CustomResourceNamespace`1">
             <summary>
             Represents the default implementation of the <see cref="T:Neuroglia.K8s.ICustomResourceNamespace`1"/> interface
@@ -149,7 +141,7 @@
             Initializes a new <see cref="T:Neuroglia.K8s.ICustomResourceWatcher`1"/>.
             </summary>
             <param name="logger">The service used to perform logging</param>
-            <param name="kubernetesClient">The service used to communicate with Kubernetes.</param>
+            <param name="kubernetes">The service used to communicate with Kubernetes.</param>
             <param name="namespace">The namespace in which to listen for Kubernetes events for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type. If null or empty, the <see cref="T:Neuroglia.K8s.ICustomResourceWatcher"/> will listen for cluster-wide events instead.</param>
         </member>
         <member name="P:Neuroglia.K8s.CustomResourceWatcher`1.Logger">
@@ -157,7 +149,7 @@
             Gets the service used to perform logging
             </summary>
         </member>
-        <member name="P:Neuroglia.K8s.CustomResourceWatcher`1.KubernetesClient">
+        <member name="P:Neuroglia.K8s.CustomResourceWatcher`1.Kubernetes">
             <summary>
             Gets the service used to communicate with Kubernetes
             </summary>
@@ -170,6 +162,11 @@
         <member name="P:Neuroglia.K8s.CustomResourceWatcher`1.Namespace">
             <summary>
             Gets the namespace in which to listen for Kubernetes events for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type. If null or empty, the controller will listen for cluster-wide events instead.
+            </summary>
+        </member>
+        <member name="F:Neuroglia.K8s.CustomResourceWatcher`1.Resources">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.List`1"/> containing all registered <see cref="T:Neuroglia.K8s.ICustomResource"/>s
             </summary>
         </member>
         <member name="F:Neuroglia.K8s.CustomResourceWatcher`1._Subscriptions">
@@ -385,7 +382,27 @@
             <param name="watch"> Watch for changes to the described resources and return them as a stream of add, update, and remove notifications.</param>
             <param name="pretty">A boolean indicating whether or not to pretty print the output</param>
             <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
-            <returns>A new <see cref="T:Neuroglia.K8s.KubernetesList`1"/> containing the custom objects of the specified type</returns>
+            <returns>A new <see cref="T:Neuroglia.K8s.KubernetesList`1"/> containing custom objects of the specified type</returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IKubernetesExtensions.ListClusterCustomObjectAsync``1(k8s.IKubernetes,System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},System.String,System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Lists cluster-wide custom objects
+            </summary>
+            <typeparam name="T">The type of custom resource to list</typeparam>
+            <param name="kubernetes">The extended <see cref="T:k8s.IKubernetes"/></param>
+            <param name="group">The custom resource's group name</param>
+            <param name="version">The custom resource's version</param>
+            <param name="plural">The custom resource's plural name. For TPRs this would be lowercase plural kind.</param>
+            <param name="continueParameter">The continue option should be set when retrieving more results from the server.</param>
+            <param name="fieldSelector">A selector to restrict the list of returned objects by their fields. Defaults to everything.</param>
+            <param name="labelSelector">A selector to restrict the list of returned objects by their labels. Defaults to everything.</param>
+            <param name="limit">Limit is a maximum number of responses to return for a list call.</param>
+            <param name="resourceVersion"> When specified with a watch call, shows changes that occur after that particular version of a resource.</param>
+            <param name="timeoutSeconds">Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.</param>
+            <param name="watch"> Watch for changes to the described resources and return them as a stream of add, update, and remove notifications.</param>
+            <param name="pretty">A boolean indicating whether or not to pretty print the output</param>
+            <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
+            <returns>A new <see cref="T:Neuroglia.K8s.KubernetesList`1"/> containing custom objects of the specified type</returns>
         </member>
         <member name="T:Neuroglia.K8s.IResourceEvent`1">
             <summary>
