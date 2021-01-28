@@ -9,7 +9,7 @@ namespace Neuroglia.K8s
     /// <typeparam name="TResource">The type of the <see cref="ICustomResource"/> to subscribe to</typeparam>
     public class CustomResourceSubscription<TResource>
         : IDisposable
-         where TResource : ICustomResource, new()
+         where TResource : class, ICustomResource, new()
     {
 
         /// <summary>

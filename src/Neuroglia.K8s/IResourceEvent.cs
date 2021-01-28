@@ -7,7 +7,7 @@ namespace Neuroglia.K8s
     /// </summary>
     /// <typeparam name="TResource">The type of the custom resource the event concerns</typeparam>
     public interface IResourceEvent<TResource>
-        where TResource : ICustomResource, new()
+        where TResource : class, ICustomResource, new()
     {
 
         /// <summary>

@@ -1,7 +1,9 @@
 ﻿using k8s;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
+using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -16,7 +18,7 @@ namespace Neuroglia.K8s
     /// <typeparam name="TResource">The type of <see cref="ICustomResource"/> to listen the Kubernetes events for.</typeparam>
     public class CustomResourceWatcher<TResource>
         : ICustomResourceWatcher<TResource>
-        where TResource : ICustomResource, new()
+        where TResource : class, ICustomResource, new()
     {
 
         private CancellationTokenSource _CancellationTokenSource;
@@ -204,6 +206,23 @@ namespace Neuroglia.K8s
             {
                 this._Subscriptions.Remove((CustomResourceSubscription<TResource>)sender);
             }
+        }
+
+        /// <inheritdoc/>
+        public virtual IEnumerator<TResource> GetEnumerator()
+        {
+            TResource crd = new TResource();
+            JObject result;
+            if(string.IsNullOrWhiteSpace(this.Namespace))
+                result = (JObject)this.KubernetesClient.ListClusterCustomObject(crd.Definition.Group, crd.Definition.Version, this.Namespace, crd.Definition.Plural);
+            else
+                result = (JObject)this.KubernetesClient.ListNamespacedCustomObject(crd.Definition.Group, crd.Definition.Version, this.Namespace, crd.Definition.Plural);
+            return result.ToObject<KubernetesList<TResource>>().Items.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
         }
 
         private bool _Disposed;

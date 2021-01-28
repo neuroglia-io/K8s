@@ -217,6 +217,9 @@
             <param name="sender">The <see cref="T:Neuroglia.K8s.CustomResourceSubscription`1"/> that has been disposed of</param>
             <param name="e">The <see cref="T:System.EventArgs"/></param>
         </member>
+        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.GetEnumerator">
+            <inheritdoc/>
+        </member>
         <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.Dispose(System.Boolean)">
             <summary>
             Disposes of the <see cref="T:Neuroglia.K8s.CustomResourceWatcher`1"/>

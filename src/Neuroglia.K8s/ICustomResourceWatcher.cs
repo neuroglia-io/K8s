@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +11,7 @@ namespace Neuroglia.K8s
     /// Defines the fundamentals of a service used to listen for Kubernetes events about a specified <see cref="ICustomResource"/> type
     /// </summary>
     public interface ICustomResourceWatcher
-        : IDisposable, IAsyncDisposable
+        : IDisposable, IAsyncDisposable, IEnumerable
     {
 
         /// <summary>
@@ -38,8 +40,8 @@ namespace Neuroglia.K8s
     /// </summary>
     /// <typeparam name="TResource">The type of <see cref="ICustomResource"/> to listen Kubernetes events for</typeparam>
     public interface ICustomResourceWatcher<TResource>
-        : ICustomResourceWatcher, IObservable<IResourceEvent<TResource>>
-        where TResource : ICustomResource, new()
+        : ICustomResourceWatcher, IObservable<IResourceEvent<TResource>>, IEnumerable<TResource>
+        where TResource : class, ICustomResource, new()
     {
 
 
