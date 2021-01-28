@@ -1,7 +1,6 @@
 ﻿using k8s;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,17 +23,18 @@ namespace Neuroglia.K8s
         private CancellationTokenSource _CancellationTokenSource;
         private Task _ExecutingTask;
         private object _SubscriptionLock = new object();
+        private object _ResourcesLock = new object();
 
         /// <summary>
         /// Initializes a new <see cref="ICustomResourceWatcher{TResource}"/>.
         /// </summary>
         /// <param name="logger">The service used to perform logging</param>
-        /// <param name="kubernetesClient">The service used to communicate with Kubernetes.</param>
+        /// <param name="kubernetes">The service used to communicate with Kubernetes.</param>
         /// <param name="namespace">The namespace in which to listen for Kubernetes events for the specified <see cref="ICustomResource"/> type. If null or empty, the <see cref="ICustomResourceWatcher"/> will listen for cluster-wide events instead.</param>
-        public CustomResourceWatcher(ILogger<CustomResourceWatcher<TResource>> logger, IKubernetes kubernetesClient, ICustomResourceNamespace<TResource> @namespace = null)
+        public CustomResourceWatcher(ILogger<CustomResourceWatcher<TResource>> logger, IKubernetes kubernetes, ICustomResourceNamespace<TResource> @namespace = null)
         {
             this.Logger = logger;
-            this.KubernetesClient = kubernetesClient;
+            this.Kubernetes = kubernetes;
             this.ResourceDefinition = new TResource().Definition;
             this.Namespace = @namespace?.Namespace;
             this.StartAsync();
@@ -56,7 +56,7 @@ namespace Neuroglia.K8s
         /// <summary>
         /// Gets the service used to communicate with Kubernetes
         /// </summary>
-        protected IKubernetes KubernetesClient { get; }
+        protected IKubernetes Kubernetes { get; }
 
         /// <summary>
         /// Gets the <see cref="ICustomResourceDefinition"/> of the <see cref="ICustomResource"/> type to to listen the Kubernetes events for.
@@ -67,6 +67,11 @@ namespace Neuroglia.K8s
         /// Gets the namespace in which to listen for Kubernetes events for the specified <see cref="ICustomResource"/> type. If null or empty, the controller will listen for cluster-wide events instead.
         /// </summary>
         protected string Namespace { get; }
+
+        /// <summary>
+        /// Gets a <see cref="List{T}"/> containing all registered <see cref="ICustomResource"/>s
+        /// </summary>
+        private List<TResource> Resources = new List<TResource>();
 
         /// <summary>
         /// Gets a <see cref="List{T}"/> containing all active subscriptions to the <see cref="IResourceEvent{TResource}"/> produced by the <see cref="CustomResourceWatcher{TResource}"/>
@@ -98,38 +103,49 @@ namespace Neuroglia.K8s
         /// <returns>A new awaitable <see cref="Task"/></returns>
         protected virtual async Task ListenAsync()
         {
-            while (!this._CancellationTokenSource.IsCancellationRequested)
+            try
+            {
+                this.Logger.LogDebug("Retrieving all registered resources of kind '{kind}' (apiVersion: {apiVersion})...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion);
+                if(string.IsNullOrWhiteSpace(this.Namespace))
+                    this.Resources = (await this.Kubernetes.ListClusterCustomObjectAsync<TResource>(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, cancellationToken: this._CancellationTokenSource.Token)).Items.ToList();
+                else
+                    this.Resources = (await this.Kubernetes.ListNamespacedCustomObjectAsync<TResource>(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, cancellationToken: this._CancellationTokenSource.Token)).Items.ToList();
+                this.Logger.LogDebug("Retrieved {count} resources of kind '{kind}' (apiVersion: {apiVersion})", this.Resources.Count, this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion);
+            }
+            catch(Exception ex)
+            {
+                this.Logger.LogError($"An exception occured while listing all registered resources of kind '{{kind}}'.{Environment.NewLine}Details: {{ex}}", this.ResourceDefinition.Kind, ex.Message);
+                throw;
+            }
+            try
             {
                 HttpOperationResponse<object> operationResponse;
-                try
+                while (!this._CancellationTokenSource.IsCancellationRequested)
                 {
-                    while (!this._CancellationTokenSource.IsCancellationRequested)
+                    if (!string.IsNullOrWhiteSpace(this.Namespace))
+                        operationResponse = await this.Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
+                    else
+                        operationResponse = await this.Kubernetes.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
+                    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+                    this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+                    using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext, this.OnError, this.OnClosed))
                     {
-                        if (!string.IsNullOrWhiteSpace(this.Namespace))
-                            operationResponse = await this.KubernetesClient.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
-                        else
-                            operationResponse = await this.KubernetesClient.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
-                        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-                        this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
-                        using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext, this.OnError, this.OnClosed))
+                        this.Logger.LogInformation("Started wathing for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+                        while (!this._CancellationTokenSource.IsCancellationRequested
+                            && !cancellationTokenSource.IsCancellationRequested)
                         {
-                            this.Logger.LogInformation("Started wathing for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
-                            while (!this._CancellationTokenSource.IsCancellationRequested
-                                && !cancellationTokenSource.IsCancellationRequested)
-                            {
 
-                            }
                         }
                     }
                 }
-                catch (HttpOperationException ex)
-                {
-                    this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}. The server responded with a '{{statusCode}}' status code:{Environment.NewLine}{{responseContent}}. Reconnecting...", this.ResourceDefinition.ApiVersion, ex.Response.StatusCode, ex.Response.Content);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}:{Environment.NewLine}{{ex}}. Reconnecting...", this.ResourceDefinition.ApiVersion, ex.ToString());
-                }
+            }
+            catch (HttpOperationException ex)
+            {
+                this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}. The server responded with a '{{statusCode}}' status code:{Environment.NewLine}{{responseContent}}. Reconnecting...", this.ResourceDefinition.ApiVersion, ex.Response.StatusCode, ex.Response.Content);
+            }
+            catch (Exception ex)
+            {
+                this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}:{Environment.NewLine}{{ex}}. Reconnecting...", this.ResourceDefinition.ApiVersion, ex.ToString());
             }
             this.Logger.LogDebug("Stopped watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
         }
@@ -171,6 +187,34 @@ namespace Neuroglia.K8s
         protected virtual void OnNext(WatchEventType type, TResource resource)
         {
             ResourceEvent<TResource> e = new ResourceEvent<TResource>(type, resource);
+            switch (e.Type)
+            {
+                case WatchEventType.Added:
+                    lock (this._ResourcesLock)
+                    {
+                        this.Resources.Add(resource);
+                    }
+                    break;
+                case WatchEventType.Modified:
+                    lock (this._ResourcesLock)
+                    {
+                        TResource match = this.Resources.FirstOrDefault(r => r.Metadata.Uid == resource.Metadata.Uid);
+                        if (match != null)
+                        {
+                            this.Resources.Remove(match);
+                            this.Resources.Add(resource);
+                        }   
+                    }
+                    break;
+                case WatchEventType.Deleted:
+                    lock (this._ResourcesLock)
+                    {
+                        TResource match = this.Resources.FirstOrDefault(r => r.Metadata.Uid == resource.Metadata.Uid);
+                        if (match != null)
+                            this.Resources.Remove(match);
+                    }
+                    break;
+            }
             this._Subscriptions.ToList().ForEach(s => s.Observer.OnNext(e));
         }
 
@@ -211,13 +255,7 @@ namespace Neuroglia.K8s
         /// <inheritdoc/>
         public virtual IEnumerator<TResource> GetEnumerator()
         {
-            TResource crd = new TResource();
-            JObject result;
-            if(string.IsNullOrWhiteSpace(this.Namespace))
-                result = (JObject)this.KubernetesClient.ListClusterCustomObject(crd.Definition.Group, crd.Definition.Version, this.Namespace, crd.Definition.Plural);
-            else
-                result = (JObject)this.KubernetesClient.ListNamespacedCustomObject(crd.Definition.Group, crd.Definition.Version, this.Namespace, crd.Definition.Plural);
-            return result.ToObject<KubernetesList<TResource>>().Items.GetEnumerator();
+            return this.Resources.ToList().GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
