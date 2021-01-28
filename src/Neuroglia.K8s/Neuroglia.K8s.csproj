@@ -13,7 +13,7 @@
     <PackageTags>neuroglia, kubernetes, k8s, docker, container</PackageTags>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.0.0.5</Version>
+    <Version>1.0.0.6</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/neuroglia-io/K8s</PackageProjectUrl>
     <RepositoryUrl>https://github.com/neuroglia-io/K8s</RepositoryUrl>
