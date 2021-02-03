@@ -1,5 +1,6 @@
 ﻿using k8s;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.Rest;
 using System;
 using System.Collections;
@@ -30,13 +31,13 @@ namespace Neuroglia.K8s
         /// </summary>
         /// <param name="logger">The service used to perform logging</param>
         /// <param name="kubernetes">The service used to communicate with Kubernetes.</param>
-        /// <param name="namespace">The namespace in which to listen for Kubernetes events for the specified <see cref="ICustomResource"/> type. If null or empty, the <see cref="ICustomResourceWatcher"/> will listen for cluster-wide events instead.</param>
-        public CustomResourceWatcher(ILogger<CustomResourceWatcher<TResource>> logger, IKubernetes kubernetes, ICustomResourceNamespace<TResource> @namespace = null)
+        /// <param name="options">The current <see cref="CustomResourceWatcherOptions"/></param>
+        public CustomResourceWatcher(ILogger<CustomResourceWatcher<TResource>> logger, IKubernetes kubernetes, CustomResourceWatcherOptions options)
         {
             this.Logger = logger;
             this.Kubernetes = kubernetes;
             this.ResourceDefinition = new TResource().Definition;
-            this.Namespace = @namespace?.Namespace;
+            this.Options = options;
             this.StartAsync();
         }
 
@@ -64,9 +65,9 @@ namespace Neuroglia.K8s
         protected ICustomResourceDefinition ResourceDefinition { get; }
 
         /// <summary>
-        /// Gets the namespace in which to listen for Kubernetes events for the specified <see cref="ICustomResource"/> type. If null or empty, the controller will listen for cluster-wide events instead.
+        /// Gets the current <see cref="CustomResourceWatcherOptions"/>
         /// </summary>
-        protected string Namespace { get; }
+        protected CustomResourceWatcherOptions Options { get; }
 
         /// <summary>
         /// Gets a <see cref="List{T}"/> containing all registered <see cref="ICustomResource"/>s
@@ -106,10 +107,10 @@ namespace Neuroglia.K8s
             try
             {
                 this.Logger.LogDebug("Retrieving all registered resources of kind '{kind}' (apiVersion: {apiVersion})...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion);
-                if(string.IsNullOrWhiteSpace(this.Namespace))
-                    this.Resources = (await this.Kubernetes.ListClusterCustomObjectAsync<TResource>(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, cancellationToken: this._CancellationTokenSource.Token)).Items.ToList();
+                if (string.IsNullOrWhiteSpace(this.Options.Namespace))
+                    this.Resources = (await this.Kubernetes.ListClusterCustomObjectAsync<TResource>(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, labelSelector: this.Options.LabelSelector, fieldSelector: this.Options.FieldSelector, cancellationToken: this._CancellationTokenSource.Token)).Items.ToList();
                 else
-                    this.Resources = (await this.Kubernetes.ListNamespacedCustomObjectAsync<TResource>(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, cancellationToken: this._CancellationTokenSource.Token)).Items.ToList();
+                    this.Resources = (await this.Kubernetes.ListNamespacedCustomObjectAsync<TResource>(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Options.Namespace, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, cancellationToken: this._CancellationTokenSource.Token)).Items.ToList();
                 this.Logger.LogDebug("Retrieved {count} resources of kind '{kind}' (apiVersion: {apiVersion})", this.Resources.Count, this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion);
             }
             catch(Exception ex)
@@ -122,15 +123,15 @@ namespace Neuroglia.K8s
                 HttpOperationResponse<object> operationResponse;
                 while (!this._CancellationTokenSource.IsCancellationRequested)
                 {
-                    if (!string.IsNullOrWhiteSpace(this.Namespace))
-                        operationResponse = await this.Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Namespace, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
+                    if (!string.IsNullOrWhiteSpace(this.Options.Namespace))
+                        operationResponse = await this.Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Options.Namespace, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true).ConfigureAwait(false);
                     else
-                        operationResponse = await this.Kubernetes.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, watch: true).ConfigureAwait(false);
+                        operationResponse = await this.Kubernetes.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true).ConfigureAwait(false);
                     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-                    this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+                    this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
                     using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext, this.OnError, this.OnClosed))
                     {
-                        this.Logger.LogInformation("Started wathing for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+                        this.Logger.LogInformation("Started wathing for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
                         while (!this._CancellationTokenSource.IsCancellationRequested
                             && !cancellationTokenSource.IsCancellationRequested)
                         {
@@ -147,7 +148,7 @@ namespace Neuroglia.K8s
             {
                 this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}:{Environment.NewLine}{{ex}}. Reconnecting...", this.ResourceDefinition.ApiVersion, ex.ToString());
             }
-            this.Logger.LogDebug("Stopped watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+            this.Logger.LogDebug("Stopped watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
         }
 
         /// <inheritdoc/>
@@ -225,7 +226,7 @@ namespace Neuroglia.K8s
         protected virtual void OnError(Exception ex)
         {
             this._Subscriptions.ToList().ForEach(s => s.Observer.OnError(ex));
-            this.Logger.LogError($"An exception occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace, ex.ToString());
+            this.Logger.LogError($"An exception occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options, ex.ToString());
             this.StartAsync();
         }
 
@@ -235,7 +236,7 @@ namespace Neuroglia.K8s
         protected virtual void OnClosed()
         {
             this._Subscriptions.ToList().ForEach(s => s.Observer.OnCompleted());
-            this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Namespace);
+            this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
             this.StartAsync();
         }
 
