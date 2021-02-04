@@ -106,7 +106,7 @@ namespace Neuroglia.K8s
         {
             try
             {
-                this.Logger.LogDebug("Retrieving all registered resources of kind '{kind}' (apiVersion: {apiVersion})...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion);
+                this.Logger.LogDebug("Retrieving all registered resources of kind '{kind}' (apiVersion: {apiVersion}) with label selector {labelSelector} and field selector {fieldSelector}...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.LabelSelector, this.Options.FieldSelector);
                 if (string.IsNullOrWhiteSpace(this.Options.Namespace))
                     this.Resources = (await this.Kubernetes.ListClusterCustomObjectAsync<TResource>(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, labelSelector: this.Options.LabelSelector, fieldSelector: this.Options.FieldSelector, cancellationToken: this._CancellationTokenSource.Token)).Items.ToList();
                 else
@@ -123,15 +123,24 @@ namespace Neuroglia.K8s
                 HttpOperationResponse<object> operationResponse;
                 while (!this._CancellationTokenSource.IsCancellationRequested)
                 {
-                    if (!string.IsNullOrWhiteSpace(this.Options.Namespace))
-                        operationResponse = await this.Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Options.Namespace, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true).ConfigureAwait(false);
-                    else
+                    if (string.IsNullOrWhiteSpace(this.Options.Namespace))
+                    {
+                        this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in cluster.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
                         operationResponse = await this.Kubernetes.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true).ConfigureAwait(false);
+                    } 
+                    else
+                    {
+                        this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
+                        operationResponse = await this.Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Options.Namespace, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true).ConfigureAwait(false);
+                    }    
                     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-                    this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
+                   
                     using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext, this.OnError, this.OnClosed))
                     {
-                        this.Logger.LogInformation("Started wathing for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
+                        if (string.IsNullOrWhiteSpace(this.Options.Namespace))
+                            this.Logger.LogInformation("Started wathing for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
+                        else
+                            this.Logger.LogInformation("Started wathing for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in cluster.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
                         while (!this._CancellationTokenSource.IsCancellationRequested
                             && !cancellationTokenSource.IsCancellationRequested)
                         {
