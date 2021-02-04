@@ -360,6 +360,38 @@
             </summary>
             <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen Kubernetes events for</typeparam>
         </member>
+        <member name="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder">
+            <summary>
+            Defines the fundamentals of a service used to build <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/>
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.WatchIn(System.String)">
+            <summary>
+            Sets the namespace in which to watch the <see cref="T:Neuroglia.K8s.ICustomResource"/>s. If the namespace is not set, the <see cref="T:Neuroglia.K8s.ICustomResourceWatcher"/> will watch for <see cref="T:Neuroglia.K8s.ICustomResource"/>s cluster-wide
+            </summary>
+            <param name="namespace">The namespace to watch the <see cref="T:Neuroglia.K8s.ICustomResource"/>s in</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.SelectByLabel(System.String)">
+            <summary>
+            Sets the label selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
+            </summary>
+            <param name="selector">The label selector (ex: environment = production) to use</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.SelectByField(System.String)">
+            <summary>
+            Sets the field selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
+            </summary>
+            <param name="selector">The field selector (ex: metadata.name) to use</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.Build">
+            <summary>
+            Builds the <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/>
+            </summary>
+            <returns>A new <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/></returns>
+        </member>
         <member name="T:Neuroglia.K8s.IKubernetesExtensions">
             <summary>
             Defines extensions for <see cref="T:k8s.IKubernetes"/>
@@ -481,38 +513,6 @@
             <typeparam name="TResource">The type of the custom resource to watch</typeparam>
             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
             <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
-        </member>
-        <member name="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder">
-            <summary>
-            Defines the fundamentals of a service used to build <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/>
-            </summary>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.WatchIn(System.String)">
-            <summary>
-            Sets the namespace in which to watch the <see cref="T:Neuroglia.K8s.ICustomResource"/>s. If the namespace is not set, the <see cref="T:Neuroglia.K8s.ICustomResourceWatcher"/> will watch for <see cref="T:Neuroglia.K8s.ICustomResource"/>s cluster-wide
-            </summary>
-            <param name="namespace">The namespace to watch the <see cref="T:Neuroglia.K8s.ICustomResource"/>s in</param>
-            <returns>The configured <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/></returns>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.SelectByLabel(System.String)">
-            <summary>
-            Sets the label selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
-            </summary>
-            <param name="selector">The label selector (ex: environment = production) to use</param>
-            <returns>The configured <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/></returns>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.SelectByField(System.String)">
-            <summary>
-            Sets the field selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
-            </summary>
-            <param name="selector">The field selector (ex: metadata.name) to use</param>
-            <returns>The configured <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/></returns>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.Build">
-            <summary>
-            Builds the <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/>
-            </summary>
-            <returns>A new <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/></returns>
         </member>
         <member name="T:Neuroglia.K8s.KubernetesDefaults">
             <summary>
