@@ -6,9 +6,9 @@
     <Company>Neuroglia SPRL</Company>
     <Copyright>Copyright © 2020 - Neuroglia SPRL. All rights reserved</Copyright>
     <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyVersion>1.0.0.11</AssemblyVersion>
-    <FileVersion>1.0.0.11</FileVersion>
-    <Version>1.0.0.11</Version>
+    <AssemblyVersion>1.0.0.12</AssemblyVersion>
+    <FileVersion>1.0.0.12</FileVersion>
+    <Version>1.0.0.12</Version>
     <Title>Neuroglia K8s</Title>
     <Description>A library that extends the official Kubernetes client.</Description>
     <PackageTags>neuroglia, kubernetes, k8s, docker, container</PackageTags>
