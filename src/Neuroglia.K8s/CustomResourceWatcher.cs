@@ -99,16 +99,6 @@ namespace Neuroglia.K8s
         }
 
         /// <summary>
-        /// Restarts the <see cref="CustomResourceWatcher{TResource}"/>
-        /// </summary>
-        /// <returns>A new awaitable <see cref="Task"/></returns>
-        protected virtual async Task RestartAsync()
-        {
-            await this.StopAsync();
-            await this.StartAsync();
-        }
-
-        /// <summary>
         /// Starts listening for Kubernetes events concerning the specified <see cref="ICustomResource"/> type
         /// </summary>
         /// <returns>A new awaitable <see cref="Task"/></returns>
@@ -132,24 +122,38 @@ namespace Neuroglia.K8s
                 }
                 try
                 {
+                    CancellationTokenSource operationCancellationTokenSource = new CancellationTokenSource();
+                    CancellationTokenSource linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(this._CancellationTokenSource.Token, operationCancellationTokenSource.Token);
                     HttpOperationResponse<object> operationResponse;
                     if (string.IsNullOrWhiteSpace(this.Options.Namespace))
                     {
                         this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in cluster.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
-                        operationResponse = await this.Kubernetes.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true).ConfigureAwait(false);
+                        operationResponse = await this.Kubernetes.ListClusterCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true, cancellationToken: linkedCancellationTokenSource.Token).ConfigureAwait(false);
                     }
                     else
                     {
                         this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
-                        operationResponse = await this.Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Options.Namespace, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true).ConfigureAwait(false);
+                        operationResponse = await this.Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Options.Namespace, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true, cancellationToken: linkedCancellationTokenSource.Token).ConfigureAwait(false);
                     }
-                    using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext, this.OnError, this.OnClosed))
+                    using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext,
+                        (ex) => 
+                        {
+                            this.Logger.LogError($"An exception occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options, ex.ToString());
+                            this._Subscriptions.ToList().ForEach(s => s.Observer.OnError(ex));
+                            operationCancellationTokenSource.Cancel();
+                        },
+                        () => 
+                        {
+                            this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
+                            operationCancellationTokenSource.Cancel();
+                        }))
                     {
                         if (string.IsNullOrWhiteSpace(this.Options.Namespace))
                             this.Logger.LogInformation("Started watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
                         else
                             this.Logger.LogInformation("Started watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in cluster.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
-                        while (!this._CancellationTokenSource.IsCancellationRequested)
+                        while (!this._CancellationTokenSource.IsCancellationRequested
+                            && !linkedCancellationTokenSource.IsCancellationRequested)
                         {
 
                         }
@@ -176,6 +180,7 @@ namespace Neuroglia.K8s
             try
             {
                 this._CancellationTokenSource.Cancel();
+                this._CancellationTokenSource = null;
             }
             finally
             {
@@ -234,26 +239,6 @@ namespace Neuroglia.K8s
                     break;
             }
             this._Subscriptions.ToList().ForEach(s => s.Observer.OnNext(e));
-        }
-
-        /// <summary>
-        /// Handles <see cref="Exception"/>s that have occured while watching for events
-        /// </summary>
-        /// <param name="ex">The <see cref="Exception"/> that has occured</param>
-        protected virtual void OnError(Exception ex)
-        {
-            this.Logger.LogError($"An exception occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options, ex.ToString());
-            this._Subscriptions.ToList().ForEach(s => s.Observer.OnError(ex));
-            _ = this.RestartAsync();
-        }
-
-        /// <summary>
-        /// Handles the closing of the underlying Kubernetes custom resource watcher
-        /// </summary>
-        protected virtual void OnClosed()
-        {
-            this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
-            _ = this.RestartAsync();
         }
 
         /// <summary>

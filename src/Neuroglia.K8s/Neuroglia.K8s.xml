@@ -160,6 +160,12 @@
         <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
+        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.RestartAsync">
+            <summary>
+            Restarts the <see cref="T:Neuroglia.K8s.CustomResourceWatcher`1"/>
+            </summary>
+            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
+        </member>
         <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.ListenAsync">
             <summary>
             Starts listening for Kubernetes events concerning the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
