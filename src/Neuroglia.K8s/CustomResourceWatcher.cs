@@ -99,6 +99,16 @@ namespace Neuroglia.K8s
         }
 
         /// <summary>
+        /// Restarts the <see cref="CustomResourceWatcher{TResource}"/>
+        /// </summary>
+        /// <returns>A new awaitable <see cref="Task"/></returns>
+        protected virtual async Task RestartAsync()
+        {
+            await this.StopAsync();
+            await this.StartAsync();
+        }
+
+        /// <summary>
         /// Starts listening for Kubernetes events concerning the specified <see cref="ICustomResource"/> type
         /// </summary>
         /// <returns>A new awaitable <see cref="Task"/></returns>
@@ -136,9 +146,9 @@ namespace Neuroglia.K8s
                     using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext, this.OnError, this.OnClosed))
                     {
                         if (string.IsNullOrWhiteSpace(this.Options.Namespace))
-                            this.Logger.LogInformation("Started wathing for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
+                            this.Logger.LogInformation("Started watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
                         else
-                            this.Logger.LogInformation("Started wathing for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in cluster.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
+                            this.Logger.LogInformation("Started watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in cluster.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
                         while (!this._CancellationTokenSource.IsCancellationRequested)
                         {
 
@@ -232,8 +242,9 @@ namespace Neuroglia.K8s
         /// <param name="ex">The <see cref="Exception"/> that has occured</param>
         protected virtual void OnError(Exception ex)
         {
-            this._Subscriptions.ToList().ForEach(s => s.Observer.OnError(ex));
             this.Logger.LogError($"An exception occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options, ex.ToString());
+            this._Subscriptions.ToList().ForEach(s => s.Observer.OnError(ex));
+            _ = this.RestartAsync();
         }
 
         /// <summary>
@@ -242,6 +253,7 @@ namespace Neuroglia.K8s
         protected virtual void OnClosed()
         {
             this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
+            _ = this.RestartAsync();
         }
 
         /// <summary>
