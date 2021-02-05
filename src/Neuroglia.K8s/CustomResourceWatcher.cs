@@ -147,13 +147,14 @@ namespace Neuroglia.K8s
                 }
                 catch (HttpOperationException ex)
                 {
-                    this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}. The server responded with a '{{statusCode}}' status code:{Environment.NewLine}{{responseContent}}. Reconnecting...", this.ResourceDefinition.ApiVersion, ex.Response.StatusCode, ex.Response.Content);
+                    this.Logger.LogError($"An exception occured while processing the events of the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}'. The server responded with a '{{statusCode}}' status code:{Environment.NewLine}Details: {{responseContent}}. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, ex.Response.StatusCode, ex.Response.Content);
                 }
                 catch (Exception ex)
                 {
-                    this.Logger.LogError($"An exception occured while processing the events of the CRD {{apiVersion}}:{Environment.NewLine}{{ex}}. Reconnecting...", this.ResourceDefinition.ApiVersion, ex.ToString());
+                    this.Logger.LogError($"An exception occured while processing the events of the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}':{Environment.NewLine}Details: {{ex}}. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, ex.ToString());
                 }
             }
+            this._Subscriptions?.ToList().ForEach(s => s.Observer.OnCompleted());
             this.Logger.LogDebug("Stopped watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
         }
 
@@ -240,7 +241,6 @@ namespace Neuroglia.K8s
         /// </summary>
         protected virtual void OnClosed()
         {
-            this._Subscriptions.ToList().ForEach(s => s.Observer.OnCompleted());
             this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
         }
 
