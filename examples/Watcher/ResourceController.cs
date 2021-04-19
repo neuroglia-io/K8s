@@ -14,7 +14,7 @@ namespace Watcher
         : BackgroundService
     {
 
-        public ResourceController(IServiceProvider serviceProvider, ILogger<ResourceController> logger, IKubernetes kubernetesClient, ICustomResourceWatcher<Test> crdWatcher)
+        public ResourceController(IServiceProvider serviceProvider, ILogger<ResourceController> logger, IKubernetes kubernetesClient, IResourceWatcher<Test> crdWatcher)
         {
             this.ServiceProvider = serviceProvider;
             this.Logger = logger;
@@ -28,12 +28,12 @@ namespace Watcher
 
         protected IKubernetes KubernetesClient { get; }
 
-        protected ICustomResourceWatcher<Test> CrdWatcher { get; }
+        protected IResourceWatcher<Test> CrdWatcher { get; }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
             this.CrdWatcher.Subscribe(this.OnTestEvent);
-            return this.KubernetesClient.CreateNamespacedCustomObjectAsync(new Test(new V1ObjectMeta() { Name = "test" }, new TestSpec() { Value = "Hello, world" }), "test");
+            return this.KubernetesClient.CreateNamespacedCustomObjectAsync(new Test(new V1ObjectMeta() { Name = "test" }, new TestSpec() { Value = "Hello, world" }), "test", cancellationToken: stoppingToken);
         }
 
         protected void OnTestEvent(IResourceEvent<Test> e)

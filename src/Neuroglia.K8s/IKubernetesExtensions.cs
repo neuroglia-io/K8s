@@ -1,4 +1,5 @@
 ﻿using k8s;
+using k8s.Models;
 using Newtonsoft.Json.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,7 +63,7 @@ namespace Neuroglia.K8s
         /// <param name="pretty">A boolean indicating whether or not to pretty print the output</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/></param>
         /// <returns>A new <see cref="KubernetesList{T}"/> containing custom objects of the specified type</returns>
-        public static async Task<KubernetesList<T>> ListNamespacedCustomObjectAsync<T>(this IKubernetes kubernetes, string group, string version, string namespaceParameter, string plural, string continueParameter = null, string fieldSelector = null, 
+        public static async Task<KubernetesList<T>> ListNamespacedCustomObjectAsync<T>(this IKubernetes kubernetes, string group, string version, string namespaceParameter, string plural, string continueParameter = null, string fieldSelector = null,
             string labelSelector = null, int? limit = null, string resourceVersion = null, int? timeoutSeconds = null, bool? watch = null, bool pretty = false, CancellationToken cancellationToken = default)
             where T : class, IKubernetesObject
         {

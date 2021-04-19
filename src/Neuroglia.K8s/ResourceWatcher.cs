@@ -1,11 +1,8 @@
 ﻿using k8s;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Rest;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,35 +10,33 @@ namespace Neuroglia.K8s
 {
 
     /// <summary>
-    /// Represents the default implementation of the <see cref="ICustomResourceWatcher{TResource}"/> interface.
+    /// Represents the default implementation of the <see cref="IResourceWatcher{TResource}"/> interface.
     /// </summary>
     /// <typeparam name="TResource">The type of <see cref="ICustomResource"/> to listen the Kubernetes events for.</typeparam>
-    public class CustomResourceWatcher<TResource>
-        : ICustomResourceWatcher<TResource>
+    public class ResourceWatcher<TResource>
+        : IResourceWatcher<TResource>
         where TResource : class, ICustomResource, new()
     {
 
         private CancellationTokenSource _CancellationTokenSource;
         private Task _ExecutingTask;
-        private object _SubscriptionLock = new object();
-        private object _ResourcesLock = new object();
+        private readonly object _SubscriptionLock = new();
 
         /// <summary>
-        /// Initializes a new <see cref="ICustomResourceWatcher{TResource}"/>.
+        /// Initializes a new <see cref="IResourceWatcher{TResource}"/>.
         /// </summary>
         /// <param name="logger">The service used to perform logging</param>
         /// <param name="kubernetes">The service used to communicate with Kubernetes.</param>
-        /// <param name="options">The current <see cref="CustomResourceWatcherOptions"/></param>
-        public CustomResourceWatcher(ILogger<CustomResourceWatcher<TResource>> logger, IKubernetes kubernetes, CustomResourceWatcherOptions options)
+        /// <param name="options">The current <see cref="ResourceWatcherOptions{TResource}"/></param>
+        public ResourceWatcher(ILogger<ResourceWatcher<TResource>> logger, IKubernetes kubernetes, ResourceWatcherOptions<TResource> options)
         {
             this.Logger = logger;
             this.Kubernetes = kubernetes;
             this.ResourceDefinition = new TResource().Definition;
             this.Options = options;
-            this.StartAsync();
         }
 
-        Type ICustomResourceWatcher.ResourceType
+        Type IResourceWatcher.ResourceType
         {
             get
             {
@@ -65,19 +60,14 @@ namespace Neuroglia.K8s
         protected ICustomResourceDefinition ResourceDefinition { get; }
 
         /// <summary>
-        /// Gets the current <see cref="CustomResourceWatcherOptions"/>
+        /// Gets the current <see cref="ResourceWatcherOptions{TResource}"/>
         /// </summary>
-        protected CustomResourceWatcherOptions Options { get; }
+        protected ResourceWatcherOptions<TResource> Options { get; }
 
         /// <summary>
-        /// Gets a <see cref="List{T}"/> containing all registered <see cref="ICustomResource"/>s
+        /// Gets the <see cref="IResourceEvent{TResource}"/> <see cref="Subject{T}"/>
         /// </summary>
-        private List<TResource> Resources = new List<TResource>();
-
-        /// <summary>
-        /// Gets a <see cref="List{T}"/> containing all active subscriptions to the <see cref="IResourceEvent{TResource}"/> produced by the <see cref="CustomResourceWatcher{TResource}"/>
-        /// </summary>
-        private List<CustomResourceSubscription<TResource>> _Subscriptions = new List<CustomResourceSubscription<TResource>>();
+        protected Subject<IResourceEvent<TResource>> Subject { get; } = new Subject<IResourceEvent<TResource>>();
 
         /// <inheritdoc/>
         public virtual Task StartAsync(CancellationToken cancellationToken = default)
@@ -85,16 +75,18 @@ namespace Neuroglia.K8s
             if (this._CancellationTokenSource != null
                 && this._CancellationTokenSource.IsCancellationRequested)
             {
-                this.Logger.LogDebug($"Failed to start the {nameof(ICustomResourceWatcher)} because it is being stopped.");
+                this.Logger.LogDebug($"Failed to start the {nameof(IResourceWatcher)} because it is being stopped.");
                 this._CancellationTokenSource = null;
                 this._ExecutingTask = null;
                 return Task.CompletedTask;
-            } 
+            }
             if (this._ExecutingTask != null
                 && this._CancellationTokenSource != null)
                 this._CancellationTokenSource.Cancel();
             this._CancellationTokenSource = new CancellationTokenSource();
-            this._ExecutingTask = this.ListenAsync();
+            this.Logger.LogInformation("Starting async...");
+            this._ExecutingTask = Task.Run(async () => await this.ListenAsync(), cancellationToken);
+            this.Logger.LogInformation("Started async");
             return Task.CompletedTask;
         }
 
@@ -108,21 +100,7 @@ namespace Neuroglia.K8s
             {
                 try
                 {
-                    this.Logger.LogDebug("Retrieving all registered resources of kind '{kind}' (apiVersion: {apiVersion}) with label selector {labelSelector} and field selector {fieldSelector}...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.LabelSelector, this.Options.FieldSelector);
-                    if (string.IsNullOrWhiteSpace(this.Options.Namespace))
-                        this.Resources = (await this.Kubernetes.ListClusterCustomObjectAsync<TResource>(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.ResourceDefinition.Plural, labelSelector: this.Options.LabelSelector, fieldSelector: this.Options.FieldSelector, cancellationToken: this._CancellationTokenSource.Token)).Items.ToList();
-                    else
-                        this.Resources = (await this.Kubernetes.ListNamespacedCustomObjectAsync<TResource>(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Options.Namespace, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, cancellationToken: this._CancellationTokenSource.Token)).Items.ToList();
-                    this.Logger.LogDebug("Retrieved {count} resources of kind '{kind}' (apiVersion: {apiVersion})", this.Resources.Count, this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion);
-                }
-                catch (Exception ex)
-                {
-                    this.Logger.LogError($"An exception occured while listing all registered resources of kind '{{kind}}'.{Environment.NewLine}Details: {{ex}}", this.ResourceDefinition.Kind, ex.Message);
-                    throw;
-                }
-                try
-                {
-                    CancellationTokenSource operationCancellationTokenSource = new CancellationTokenSource();
+                    CancellationTokenSource operationCancellationTokenSource = new();
                     CancellationTokenSource linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(this._CancellationTokenSource.Token, operationCancellationTokenSource.Token);
                     HttpOperationResponse<object> operationResponse;
                     if (string.IsNullOrWhiteSpace(this.Options.Namespace))
@@ -136,13 +114,13 @@ namespace Neuroglia.K8s
                         operationResponse = await this.Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Options.Namespace, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true, cancellationToken: linkedCancellationTokenSource.Token).ConfigureAwait(false);
                     }
                     using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext,
-                        (ex) => 
+                        (ex) =>
                         {
                             this.Logger.LogError($"An exception occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options, ex.ToString());
-                            this._Subscriptions.ToList().ForEach(s => s.Observer.OnError(ex));
+                            this.OnError(ex);
                             operationCancellationTokenSource.Cancel();
                         },
-                        () => 
+                        () =>
                         {
                             this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
                             operationCancellationTokenSource.Cancel();
@@ -162,13 +140,15 @@ namespace Neuroglia.K8s
                 catch (HttpOperationException ex)
                 {
                     this.Logger.LogError($"An exception occured while processing the events of the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}'. The server responded with a '{{statusCode}}' status code:{Environment.NewLine}Details: {{responseContent}}. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, ex.Response.StatusCode, ex.Response.Content);
+                    this.OnError(ex);
                 }
                 catch (Exception ex)
                 {
                     this.Logger.LogError($"An exception occured while processing the events of the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}':{Environment.NewLine}Details: {{ex}}. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, ex.ToString());
+                    this.OnError(ex);
                 }
             }
-            this._Subscriptions?.ToList().ForEach(s => s.Observer.OnCompleted());
+            this.Subject?.OnCompleted();
             this.Logger.LogDebug("Stopped watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
         }
 
@@ -193,13 +173,7 @@ namespace Neuroglia.K8s
         /// <inheritdoc/>
         public virtual IDisposable Subscribe(IObserver<IResourceEvent<TResource>> observer)
         {
-            CustomResourceSubscription<TResource> subscription = new CustomResourceSubscription<TResource>(observer);
-            subscription.Disposed += this.OnSubscriptionDisposed;
-            lock (this._SubscriptionLock)
-            {
-                this._Subscriptions.Add(subscription);
-            }
-            return subscription;
+            return this.Subject.Subscribe(observer);
         }
 
         /// <summary>
@@ -209,73 +183,32 @@ namespace Neuroglia.K8s
         /// <param name="resource">The watched <see cref="ICustomResource"/></param>
         protected virtual void OnNext(WatchEventType type, TResource resource)
         {
-            ResourceEvent<TResource> e = new ResourceEvent<TResource>(type, resource);
-            switch (e.Type)
-            {
-                case WatchEventType.Added:
-                    lock (this._ResourcesLock)
-                    {
-                        this.Resources.Add(resource);
-                    }
-                    break;
-                case WatchEventType.Modified:
-                    lock (this._ResourcesLock)
-                    {
-                        TResource match = this.Resources.FirstOrDefault(r => r.Metadata.Uid == resource.Metadata.Uid);
-                        if (match != null)
-                        {
-                            this.Resources.Remove(match);
-                            this.Resources.Add(resource);
-                        }   
-                    }
-                    break;
-                case WatchEventType.Deleted:
-                    lock (this._ResourcesLock)
-                    {
-                        TResource match = this.Resources.FirstOrDefault(r => r.Metadata.Uid == resource.Metadata.Uid);
-                        if (match != null)
-                            this.Resources.Remove(match);
-                    }
-                    break;
-            }
-            this._Subscriptions.ToList().ForEach(s => s.Observer.OnNext(e));
+            if(this.Options.Predicate == null
+                || (this.Options.Predicate != null && this.Options.Predicate(type, resource)))
+                this.Subject.OnNext(new ResourceEvent<TResource>(type, resource));
         }
 
         /// <summary>
-        /// Handles the event fired whenever a <see cref="CustomResourceSubscription{TResource}"/> has been disposed of
+        /// Handles <see cref="Exception"/>s thrown during the listening loop
         /// </summary>
-        /// <param name="sender">The <see cref="CustomResourceSubscription{TResource}"/> that has been disposed of</param>
-        /// <param name="e">The <see cref="EventArgs"/></param>
-        protected virtual void OnSubscriptionDisposed(object sender, EventArgs e)
+        /// <param name="ex">The <see cref="Exception"/> to handle</param>
+        protected virtual void OnError(Exception ex)
         {
-            lock (this._SubscriptionLock)
-            {
-                this._Subscriptions.Remove((CustomResourceSubscription<TResource>)sender);
-            }
-        }
-
-        /// <inheritdoc/>
-        public virtual IEnumerator<TResource> GetEnumerator()
-        {
-            return this.Resources.ToList().GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return this.GetEnumerator();
+            this.Subject.OnError(ex);
         }
 
         private bool _Disposed;
         /// <summary>
-        /// Disposes of the <see cref="CustomResourceWatcher{TResource}"/>
+        /// Disposes of the <see cref="ResourceWatcher{TResource}"/>
         /// </summary>
-        /// <param name="disposing">A boolean indicating whether or not the <see cref="CustomResourceWatcher{TResource}"/> is being disposed of</param>
+        /// <param name="disposing">A boolean indicating whether or not the <see cref="ResourceWatcher{TResource}"/> is being disposed of</param>
         protected virtual void Dispose(bool disposing)
         {
             if (!this._Disposed)
             {
                 if (disposing)
                     this._CancellationTokenSource.Cancel();
+                this.Subject?.Dispose();
                 this._Disposed = true;
                 this.Logger.LogDebug("Disposed of the custom resource watcher for CRD of kind '{crdKind}', in group '{crdGroup}' and with version '{crdVersion}'", this.ResourceDefinition.Kind, this.ResourceDefinition.Group, this.ResourceDefinition.Version);
             }
@@ -291,7 +224,7 @@ namespace Neuroglia.K8s
         /// <inheritdoc/>
         public async ValueTask DisposeAsync()
         {
-            await this.StopAsync();
+            await Task.Run(() => this.Dispose());
         }
 
     }

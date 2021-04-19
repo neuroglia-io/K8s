@@ -26,7 +26,7 @@ namespace Watcher
                 {
                     services.AddLogging();
                     services.AddSingleton<IKubernetes>(new Kubernetes(KubernetesClientConfiguration.InClusterConfig()));
-                    services.AddCustomResourceWatcher<Test>("test");
+                    services.AddResourceWatcher<Test>(watch => watch.InNamespace("test"));
                     services.AddHostedService<ResourceController>();
                 });
         }

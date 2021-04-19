@@ -2,7 +2,6 @@
 
 namespace Neuroglia.K8s
 {
-
     /// <summary>
     /// Represents a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>.
     /// </summary>

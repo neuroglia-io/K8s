@@ -4,28 +4,6 @@
         <name>Neuroglia.K8s</name>
     </assembly>
     <members>
-        <member name="T:Neuroglia.K8s.CustomResource">
-            <summary>
-            Represents an instance of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>
-            </summary>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResource.#ctor(Neuroglia.K8s.ICustomResourceDefinition)">
-            <summary>
-            Initializes a new <see cref="T:Neuroglia.K8s.CustomResource"/>
-            </summary>
-            <param name="definition">The <see cref="T:Neuroglia.K8s.CustomResource"/>'s definition</param>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResource.Definition">
-            <inheritdoc/>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResource.Metadata">
-            <inheritdoc/>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResource.Validate">
-            <summary>
-            Validates the <see cref="T:Neuroglia.K8s.CustomResource"/>
-            </summary>
-        </member>
         <member name="T:Neuroglia.K8s.CustomResource`1">
             <summary>
             Represents an instance of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>
@@ -57,6 +35,28 @@
         <member name="P:Neuroglia.K8s.CustomResource`2.Status">
             <inheritdoc/>
         </member>
+        <member name="T:Neuroglia.K8s.CustomResource">
+            <summary>
+            Represents an instance of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResource.#ctor(Neuroglia.K8s.ICustomResourceDefinition)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.CustomResource"/>
+            </summary>
+            <param name="definition">The <see cref="T:Neuroglia.K8s.CustomResource"/>'s definition</param>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResource.Definition">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.CustomResource.Metadata">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.CustomResource.Validate">
+            <summary>
+            Validates the <see cref="T:Neuroglia.K8s.CustomResource"/>
+            </summary>
+        </member>
         <member name="T:Neuroglia.K8s.CustomResourceDefinition">
             <summary>
             Represents a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see>.
@@ -83,175 +83,6 @@
             <inheritdoc/>
         </member>
         <member name="P:Neuroglia.K8s.CustomResourceDefinition.Version">
-            <inheritdoc/>
-        </member>
-        <member name="T:Neuroglia.K8s.CustomResourceSubscription`1">
-            <summary>
-            Represents a subscription to an <see cref="T:Neuroglia.K8s.ICustomResource"/>
-            </summary>
-            <typeparam name="TResource">The type of the <see cref="T:Neuroglia.K8s.ICustomResource"/> to subscribe to</typeparam>
-        </member>
-        <member name="E:Neuroglia.K8s.CustomResourceSubscription`1.Disposed">
-            <summary>
-            Represents the event fired whenever the <see cref="T:Neuroglia.K8s.CustomResourceSubscription`1"/> has been disposed of
-            </summary>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceSubscription`1.#ctor(System.IObserver{Neuroglia.K8s.IResourceEvent{`0}})">
-            <summary>
-            Initializes a new <see cref="T:Neuroglia.K8s.CustomResourceSubscription`1"/>
-            </summary>
-            <param name="observer">The owner of the <see cref="T:Neuroglia.K8s.CustomResourceSubscription`1"/></param>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResourceSubscription`1.Observer">
-            <summary>
-            Gets the owner of the <see cref="T:Neuroglia.K8s.CustomResourceSubscription`1"/>
-            </summary>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceSubscription`1.Dispose(System.Boolean)">
-            <summary>
-            Disposes of the <see cref="T:Neuroglia.K8s.CustomResourceSubscription`1"/>
-            </summary>
-            <param name="disposing">A boolean indicating whether or not the <see cref="T:Neuroglia.K8s.CustomResourceSubscription`1"/> is being disposed of</param>
-        </member>
-        <member name="T:Neuroglia.K8s.CustomResourceWatcher`1">
-            <summary>
-            Represents the default implementation of the <see cref="T:Neuroglia.K8s.ICustomResourceWatcher`1"/> interface.
-            </summary>
-            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen the Kubernetes events for.</typeparam>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.#ctor(Microsoft.Extensions.Logging.ILogger{Neuroglia.K8s.CustomResourceWatcher{`0}},k8s.IKubernetes,Neuroglia.K8s.CustomResourceWatcherOptions)">
-            <summary>
-            Initializes a new <see cref="T:Neuroglia.K8s.ICustomResourceWatcher`1"/>.
-            </summary>
-            <param name="logger">The service used to perform logging</param>
-            <param name="kubernetes">The service used to communicate with Kubernetes.</param>
-            <param name="options">The current <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/></param>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResourceWatcher`1.Logger">
-            <summary>
-            Gets the service used to perform logging
-            </summary>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResourceWatcher`1.Kubernetes">
-            <summary>
-            Gets the service used to communicate with Kubernetes
-            </summary>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResourceWatcher`1.ResourceDefinition">
-            <summary>
-            Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/> of the <see cref="T:Neuroglia.K8s.ICustomResource"/> type to to listen the Kubernetes events for.
-            </summary>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResourceWatcher`1.Options">
-            <summary>
-            Gets the current <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/>
-            </summary>
-        </member>
-        <member name="F:Neuroglia.K8s.CustomResourceWatcher`1.Resources">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.List`1"/> containing all registered <see cref="T:Neuroglia.K8s.ICustomResource"/>s
-            </summary>
-        </member>
-        <member name="F:Neuroglia.K8s.CustomResourceWatcher`1._Subscriptions">
-            <summary>
-            Gets a <see cref="T:System.Collections.Generic.List`1"/> containing all active subscriptions to the <see cref="T:Neuroglia.K8s.IResourceEvent`1"/> produced by the <see cref="T:Neuroglia.K8s.CustomResourceWatcher`1"/>
-            </summary>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.StartAsync(System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.ListenAsync">
-            <summary>
-            Starts listening for Kubernetes events concerning the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
-            </summary>
-            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.StopAsync(System.Threading.CancellationToken)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.Subscribe(System.IObserver{Neuroglia.K8s.IResourceEvent{`0}})">
-            <inheritdoc/>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.OnNext(k8s.WatchEventType,`0)">
-            <summary>
-            Handles resources events returned by the <see cref="T:k8s.IKubernetes"/> client
-            </summary>
-            <param name="type">The <see cref="T:k8s.WatchEventType"/></param>
-            <param name="resource">The watched <see cref="T:Neuroglia.K8s.ICustomResource"/></param>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.OnSubscriptionDisposed(System.Object,System.EventArgs)">
-            <summary>
-            Handles the event fired whenever a <see cref="T:Neuroglia.K8s.CustomResourceSubscription`1"/> has been disposed of
-            </summary>
-            <param name="sender">The <see cref="T:Neuroglia.K8s.CustomResourceSubscription`1"/> that has been disposed of</param>
-            <param name="e">The <see cref="T:System.EventArgs"/></param>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.GetEnumerator">
-            <inheritdoc/>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.Dispose(System.Boolean)">
-            <summary>
-            Disposes of the <see cref="T:Neuroglia.K8s.CustomResourceWatcher`1"/>
-            </summary>
-            <param name="disposing">A boolean indicating whether or not the <see cref="T:Neuroglia.K8s.CustomResourceWatcher`1"/> is being disposed of</param>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.Dispose">
-            <inheritdoc/>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcher`1.DisposeAsync">
-            <inheritdoc/>
-        </member>
-        <member name="T:Neuroglia.K8s.CustomResourceWatcherOptions">
-            <summary>
-            Represents the options used to configure an <see cref="T:Neuroglia.K8s.ICustomResourceWatcher"/>
-            </summary>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResourceWatcherOptions.Namespace">
-            <summary>
-            Gets/sets the namespace in which to listen for <see cref="T:Neuroglia.K8s.ICustomResource"/>s
-            </summary>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResourceWatcherOptions.LabelSelector">
-            <summary>
-            Gets/sets the label selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
-            </summary>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResourceWatcherOptions.FieldSelector">
-            <summary>
-            Gets/sets the field selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
-            </summary>
-        </member>
-        <member name="T:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder">
-            <summary>
-            Represents the default implementation of the <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/> interface
-            </summary>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder.#ctor(Neuroglia.K8s.CustomResourceWatcherOptions)">
-            <summary>
-            Initializes a new <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder"/>
-            </summary>
-            <param name="options">The <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/> to configure</param>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder.#ctor">
-            <summary>
-            Initializes a new <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder"/>
-            </summary>
-        </member>
-        <member name="P:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder.Options">
-            <summary>
-            Gets the <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/> to configure
-            </summary>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder.WatchIn(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder.SelectByLabel(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder.SelectByField(System.String)">
-            <inheritdoc/>
-        </member>
-        <member name="M:Neuroglia.K8s.CustomResourceWatcherOptionsBuilder.Build">
             <inheritdoc/>
         </member>
         <member name="T:Neuroglia.K8s.ICustomResource">
@@ -319,68 +150,6 @@
             Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/>'s version
             </summary>
         </member>
-        <member name="T:Neuroglia.K8s.ICustomResourceWatcher">
-            <summary>
-            Defines the fundamentals of a service used to listen for Kubernetes events about a specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
-            </summary>
-        </member>
-        <member name="P:Neuroglia.K8s.ICustomResourceWatcher.ResourceType">
-            <summary>
-            Gets the type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen Kubernetes events for
-            </summary>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcher.StartAsync(System.Threading.CancellationToken)">
-            <summary>
-            Starts listening for Kubernetes events concerning the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
-            </summary>
-            <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
-            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcher.StopAsync(System.Threading.CancellationToken)">
-            <summary>
-            Stops listening for Kubernetes events
-            </summary>
-            <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
-            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
-        </member>
-        <member name="T:Neuroglia.K8s.ICustomResourceWatcher`1">
-            <summary>
-            Defines the fundamentals of a service used to listen for Kubernetes events about a specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
-            </summary>
-            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen Kubernetes events for</typeparam>
-        </member>
-        <member name="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder">
-            <summary>
-            Defines the fundamentals of a service used to build <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/>
-            </summary>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.WatchIn(System.String)">
-            <summary>
-            Sets the namespace in which to watch the <see cref="T:Neuroglia.K8s.ICustomResource"/>s. If the namespace is not set, the <see cref="T:Neuroglia.K8s.ICustomResourceWatcher"/> will watch for <see cref="T:Neuroglia.K8s.ICustomResource"/>s cluster-wide
-            </summary>
-            <param name="namespace">The namespace to watch the <see cref="T:Neuroglia.K8s.ICustomResource"/>s in</param>
-            <returns>The configured <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/></returns>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.SelectByLabel(System.String)">
-            <summary>
-            Sets the label selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
-            </summary>
-            <param name="selector">The label selector (ex: environment = production) to use</param>
-            <returns>The configured <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/></returns>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.SelectByField(System.String)">
-            <summary>
-            Sets the field selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
-            </summary>
-            <param name="selector">The field selector (ex: metadata.name) to use</param>
-            <returns>The configured <see cref="T:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder"/></returns>
-        </member>
-        <member name="M:Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder.Build">
-            <summary>
-            Builds the <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/>
-            </summary>
-            <returns>A new <see cref="T:Neuroglia.K8s.CustomResourceWatcherOptions"/></returns>
-        </member>
         <member name="T:Neuroglia.K8s.IKubernetesExtensions">
             <summary>
             Defines extensions for <see cref="T:k8s.IKubernetes"/>
@@ -428,7 +197,7 @@
             <param name="watch"> Watch for changes to the described resources and return them as a stream of add, update, and remove notifications.</param>
             <param name="pretty">A boolean indicating whether or not to pretty print the output</param>
             <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
-            <returns>A new <see cref="T:Neuroglia.K8s.KubernetesList`1"/> containing custom objects of the specified type</returns>
+            <returns>A new <see cref="T:k8s.Models.KubernetesList`1"/> containing custom objects of the specified type</returns>
         </member>
         <member name="M:Neuroglia.K8s.IKubernetesExtensions.ListClusterCustomObjectAsync``1(k8s.IKubernetes,System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},System.String,System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Boolean,System.Threading.CancellationToken)">
             <summary>
@@ -448,13 +217,90 @@
             <param name="watch"> Watch for changes to the described resources and return them as a stream of add, update, and remove notifications.</param>
             <param name="pretty">A boolean indicating whether or not to pretty print the output</param>
             <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
-            <returns>A new <see cref="T:Neuroglia.K8s.KubernetesList`1"/> containing custom objects of the specified type</returns>
+            <returns>A new <see cref="T:k8s.Models.KubernetesList`1"/> containing custom objects of the specified type</returns>
+        </member>
+        <member name="T:Neuroglia.K8s.IResourceController">
+            <summary>
+            Defines the fundamentals of a service used to control <see cref="T:Neuroglia.K8s.ICustomResource"/>s
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.IResourceController.ResourceType">
+            <summary>
+            Gets the type of <see cref="T:Neuroglia.K8s.ICustomResource"/>s managed by the <see cref="T:Neuroglia.K8s.IResourceController"/>
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.IResourceController`1">
+            <summary>
+            Defines the fundamentals of a service used to control <see cref="T:Neuroglia.K8s.ICustomResource"/>s
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/>s to control</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceController`1.ReconcileAsync(System.Threading.CancellationToken)">
+            <summary>
+            Reconciles the states of managed <see cref="T:Neuroglia.K8s.ICustomResource"/>s
+            </summary>
+            <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
+            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
+        </member>
+        <member name="T:Neuroglia.K8s.IResourceControllerOptions`1">
+            <summary>
+            Defines the fundamentals of the options used to configure an <see cref="T:Neuroglia.K8s.IResourceController"/>
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to manage</typeparam>
+        </member>
+        <member name="P:Neuroglia.K8s.IResourceControllerOptions`1.AutoReconcile">
+            <summary>
+            Gets a boolean indicating whether or not the <see cref="T:Neuroglia.K8s.IResourceController"/> to configure should automatically and periodically reconcile
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.IResourceControllerOptions`1.ReconciliationPeriod">
+            <summary>
+            Gets the <see cref="T:System.TimeSpan"/> that represents the period of time after which to reconcile the <see cref="T:Neuroglia.K8s.IResourceController"/> to configure
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.IResourceControllerOptions`1.WatchConfiguration">
+            <summary>
+            Gets an <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IResourceWatcher"/> used by the <see cref="T:Neuroglia.K8s.IResourceController"/> to configure
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1">
+            <summary>
+            Defines the fundamentals of a service used to build <see cref="T:Neuroglia.K8s.IResourceControllerOptions`1"/>
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/>s to manage</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceControllerOptionsBuilder`1.UseAutomaticReconciliation(System.Boolean)">
+            <summary>
+            Sets a boolean indicating whether or not to use automatic reconciliation
+            </summary>
+            <param name="enabled">A boolean indicating whether or not to use automatic reconciliation</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceControllerOptionsBuilder`1.ReconcileEvery(System.TimeSpan)">
+            <summary>
+            Sets the duration after which the <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/> will periodically auto-reconcile
+            </summary>
+            <param name="period">A <see cref="T:System.TimeSpan"/> representing the duration after which the <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/> will periodically auto-reconcile</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceControllerOptionsBuilder`1.Watch(System.Action{Neuroglia.K8s.IResourceWatcherOptionsBuilder{`0}})">
+            <summary>
+            Configures the <see cref="T:Neuroglia.K8s.IResourceWatcher`1"/> used by the <see cref="T:Neuroglia.K8s.IResourceController`1"/> to configure
+            </summary>
+            <param name="wacthConfiguration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IResourceWatcher`1"/> used by the <see cref="T:Neuroglia.K8s.IResourceController`1"/> to configure</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceControllerOptionsBuilder`1.Build">
+            <summary>
+            Builds the <see cref="T:Neuroglia.K8s.IResourceControllerOptions`1"/>
+            </summary>
+            <returns>A new <see cref="T:Neuroglia.K8s.IResourceControllerOptions`1"/></returns>
         </member>
         <member name="T:Neuroglia.K8s.IResourceEvent`1">
             <summary>
-            Defines the fundamentals of an event originating from a Kubernetes custom resource of the specified type 
+            Defines the fundamentals of an event originating from a <see cref="T:Neuroglia.K8s.ICustomResource"/> of the specified type 
             </summary>
-            <typeparam name="TResource">The type of the custom resource the event concerns</typeparam>
+            <typeparam name="TResource">The type of the <see cref="T:Neuroglia.K8s.ICustomResource"/> the event concerns</typeparam>
         </member>
         <member name="P:Neuroglia.K8s.IResourceEvent`1.Type">
             <summary>
@@ -465,6 +311,108 @@
             <summary>
             Gets the custom resource that has produced the event
             </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.IResourceWatcher">
+            <summary>
+            Defines the fundamentals of a service used to listen for Kubernetes events about a specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.IResourceWatcher.ResourceType">
+            <summary>
+            Gets the type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen Kubernetes events for
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.IResourceWatcher`1">
+            <summary>
+            Defines the fundamentals of a service used to listen for Kubernetes events about a specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen Kubernetes events for</typeparam>
+        </member>
+        <member name="T:Neuroglia.K8s.IResourceWatcherFactory">
+            <summary>
+            Defines the fundamentals of a service used to create <see cref="T:Neuroglia.K8s.IResourceWatcher"/>s
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceWatcherFactory.Create``1(System.Action{Neuroglia.K8s.IResourceWatcherOptionsBuilder{``0}})">
+            <summary>
+            Create a new <see cref="T:Neuroglia.K8s.IResourceWatcher"/> for the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to watch</typeparam>
+            <param name="configuration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IResourceWatcher"/> to create</param>
+            <returns>A new <see cref="T:Neuroglia.K8s.IResourceWatcher"/></returns>
+        </member>
+        <member name="T:Neuroglia.K8s.IResourceWatcherOptions`1">
+            <summary>
+            Defines the fundamentals of the options used to configure an <see cref="T:Neuroglia.K8s.IResourceWatcher`1"/>
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to watch</typeparam>
+        </member>
+        <member name="P:Neuroglia.K8s.IResourceWatcherOptions`1.Namespace">
+            <summary>
+            Gets the namespace in which to listen for <see cref="T:Neuroglia.K8s.ICustomResource"/>s
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.IResourceWatcherOptions`1.LabelSelector">
+            <summary>
+            Gets the label selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.IResourceWatcherOptions`1.FieldSelector">
+            <summary>
+            Gets the field selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.IResourceWatcherOptions`1.Predicate">
+            <summary>
+            Gets a predicate <see cref="T:System.Func`2"/> to determine whether or not to handle an event fired by the watched <see cref="T:Neuroglia.K8s.ICustomResource"/>
+            </summary>
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1">
+            <summary>
+            Defines the fundamentals of a service used to build <see cref="T:Neuroglia.K8s.IResourceWatcherOptions`1"/>
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to watch</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1.InCluster">
+            <summary>
+            Configures the <see cref="T:Neuroglia.K8s.IResourceWatcher"/> to watch for <see cref="T:Neuroglia.K8s.ICustomResource"/>s cluster-wide. Will ignore the namespace, if it has been set.
+            </summary>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1.InNamespace(System.String)">
+            <summary>
+            Sets the namespace in which to watch the <see cref="T:Neuroglia.K8s.ICustomResource"/>s. If the namespace is not set, the <see cref="T:Neuroglia.K8s.IResourceWatcher"/> will watch for <see cref="T:Neuroglia.K8s.ICustomResource"/>s cluster-wide
+            </summary>
+            <param name="namespace">The namespace to watch the <see cref="T:Neuroglia.K8s.ICustomResource"/>s in</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1.WithLabel(System.String)">
+            <summary>
+            Sets the label selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
+            </summary>
+            <param name="selector">The label selector (ex: environment = production) to use</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1.WithField(System.String)">
+            <summary>
+            Sets the field selector by which to filter the <see cref="T:Neuroglia.K8s.ICustomResource"/>s to watch
+            </summary>
+            <param name="selector">The field selector (ex: metadata.name) to use</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1.When(System.Func{k8s.WatchEventType,`0,System.Boolean})">
+            <summary>
+            Sets a predicate used to determine whether or not to handle the specified <see cref="T:Neuroglia.K8s.ICustomResource"/>'s <see cref="T:k8s.WatchEventType"/>
+            </summary>
+            <param name="predicate">A predicate <see cref="T:System.Func`3"/> used to determine whether or not to handle the specified <see cref="T:Neuroglia.K8s.ICustomResource"/>'s <see cref="T:k8s.WatchEventType"/></param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IResourceWatcherOptionsBuilder`1.Build">
+            <summary>
+            Builds the <see cref="T:Neuroglia.K8s.IResourceWatcherOptions`1"/>
+            </summary>
+            <returns>A new <see cref="T:Neuroglia.K8s.IResourceWatcherOptions`1"/></returns>
         </member>
         <member name="T:Neuroglia.K8s.IServiceCollectionExtensions">
             <summary>
@@ -486,26 +434,43 @@
             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
             <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
         </member>
-        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddCustomResourceWatcher``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Neuroglia.K8s.ICustomResourceWatcherOptionsBuilder})">
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddResourceWatcherFactory``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            Adds an <see cref="T:Neuroglia.K8s.ICustomResourceWatcher"/> for the specified custom resource type
+            Adds a <see cref="T:Neuroglia.K8s.IResourceWatcherFactory"/>
             </summary>
-            <typeparam name="TResource">The type of the custom resource to watch</typeparam>
+            <typeparam name="TFactory">The type of the <see cref="T:Neuroglia.K8s.IResourceWatcherFactory"/> to add</typeparam>
             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
-            <param name="configuration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.ICustomResourceWatcher"/> to use</param>
             <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
         </member>
-        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddCustomResourceWatcher``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddResourceWatcherFactory(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
             <summary>
-            Adds an <see cref="T:Neuroglia.K8s.ICustomResourceWatcher"/> for the specified custom resource type
+            Adds the default <see cref="T:Neuroglia.K8s.IResourceWatcherFactory"/>
             </summary>
-            <typeparam name="TResource">The type of the custom resource to watch</typeparam>
             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddResourceWatcher``1(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Neuroglia.K8s.IResourceWatcherOptionsBuilder{``0}})">
+            <summary>
+            Adds and configures a new <see cref="T:Neuroglia.K8s.IResourceWatcher`1"/>
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to watch</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <param name="configuration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IResourceWatcher"/></param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddResourceController``2(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Neuroglia.K8s.IResourceControllerOptionsBuilder{``1}})">
+            <summary>
+            Adds and configures a new <see cref="T:Neuroglia.K8s.IResourceController`1"/>
+            </summary>
+            <typeparam name="TController">The type of the <see cref="T:Neuroglia.K8s.IResourceController`1"/> implementation to add</typeparam>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to manage</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <param name="configuration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IResourceController"/> to add</param>
             <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
         </member>
         <member name="T:Neuroglia.K8s.KubernetesDefaults">
             <summary>
-            Exposes constants about Kubernetes defaults
+            Exposes Kubernetes defaults 
             </summary>
         </member>
         <member name="T:Neuroglia.K8s.KubernetesDefaults.ApiVersions">
@@ -548,29 +513,136 @@
             Gets the 'ExternalName' service type
             </summary>
         </member>
-        <member name="T:Neuroglia.K8s.KubernetesList`1">
+        <member name="T:Neuroglia.K8s.ResourceController`1">
             <summary>
-            Represents a list of <see cref="T:Neuroglia.K8s.ICustomResource"/>s
+            Represents the default base class for all <see cref="T:Neuroglia.K8s.IResourceController"/> implementations
             </summary>
-            <typeparam name="T">The type of <see cref="T:k8s.IKubernetesObject"/>s contained by the <see cref="T:Neuroglia.K8s.KubernetesList`1"/></typeparam>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to watch</typeparam>
         </member>
-        <member name="P:Neuroglia.K8s.KubernetesList`1.Items">
+        <member name="M:Neuroglia.K8s.ResourceController`1.#ctor(Microsoft.Extensions.Logging.ILoggerFactory,k8s.IKubernetes,Neuroglia.K8s.IResourceWatcherFactory,Microsoft.Extensions.Options.IOptions{Neuroglia.K8s.ResourceControllerOptions{`0}})">
             <summary>
-            Gets/sets an <see cref="T:System.Collections.Generic.IList`1"/> containing the <see cref="T:k8s.IKubernetesObject"/>s the <see cref="T:Neuroglia.K8s.KubernetesList`1"/> is made out of
+            Initializes a new <see cref="T:Neuroglia.K8s.ResourceController`1"/>
             </summary>
+            <param name="loggerFactory">The service used to create <see cref="T:Microsoft.Extensions.Logging.ILogger"/>s</param>
+            <param name="kubernetes">The Kubernets API client service</param>
+            <param name="resourceWatcherFactory">The service used to create <see cref="T:Neuroglia.K8s.IResourceWatcherFactory"/> instances</param>
+            <param name="options">The service used to retrieve the <see cref="T:Neuroglia.K8s.ResourceController`1"/>'s <see cref="T:Neuroglia.K8s.ResourceControllerOptions`1"/></param>
         </member>
-        <member name="T:Neuroglia.K8s.KubernetesObject`1">
+        <member name="P:Neuroglia.K8s.ResourceController`1.Logger">
             <summary>
-            Represents the base class for all generic <see cref="T:k8s.IKubernetesObject"/>s
+            Gets the service used to perform logging
             </summary>
         </member>
-        <member name="P:Neuroglia.K8s.KubernetesObject`1.ApiVersion">
+        <member name="P:Neuroglia.K8s.ResourceController`1.Kubernetes">
+            <summary>
+            Gets the Kubernets API client service
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceController`1.ResourceWatcher">
+            <summary>
+            Gets the service used to watch <see cref="T:Neuroglia.K8s.ICustomResource"/>s of the specified type
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceController`1.ResourceDefinition">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/> of the controlled <see cref="T:Neuroglia.K8s.ICustomResource"/> type
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceController`1.Options">
+            <summary>
+            Gets the options used to configure the <see cref="T:Neuroglia.K8s.ResourceController`1"/>
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceController`1.StartAsync(System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="P:Neuroglia.K8s.KubernetesObject`1.Kind">
+        <member name="M:Neuroglia.K8s.ResourceController`1.ReconcileAsync(System.Threading.CancellationToken)">
             <inheritdoc/>
         </member>
-        <member name="P:Neuroglia.K8s.KubernetesObject`1.Metadata">
+        <member name="M:Neuroglia.K8s.ResourceController`1.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceController`1.OnEvent(Neuroglia.K8s.IResourceEvent{`0})">
+            <summary>
+            Handles the specified <see cref="T:Neuroglia.K8s.IResourceEvent`1"/>
+            </summary>
+            <param name="e">The <see cref="T:Neuroglia.K8s.IResourceEvent`1"/> to handle</param>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceController`1.OnError(System.Exception)">
+            <summary>
+            Handles an <see cref="T:System.Exception"/> that has occured while watching the <see cref="T:Neuroglia.K8s.ICustomResource"/>s of the specified type
+            </summary>
+            <param name="ex">The <see cref="T:System.Exception"/></param>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceController`1.OnCompleted">
+            <summary>
+            Handles the completion of the subscription's stream
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceController`1.Dispose(System.Boolean)">
+            <summary>
+            Disposes of the <see cref="T:Neuroglia.K8s.IResourceController"/>
+            </summary>
+            <param name="disposing">A boolean indicating whether or not the <see cref="T:Neuroglia.K8s.IResourceController"/> is being disposed of</param>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceController`1.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceController`1.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.ResourceControllerOptions`1">
+            <summary>
+            Represents the options used to configure an <see cref="T:Neuroglia.K8s.IResourceController"/>
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to manage</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceControllerOptions`1.#ctor">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.ResourceControllerOptions`1"/>
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceControllerOptions`1.AutoReconcile">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceControllerOptions`1.ReconciliationPeriod">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceControllerOptions`1.WatchConfiguration">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.ResourceControllerOptionsBuilder`1">
+            <summary>
+            Represents the default implementation of the <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/> interface
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to manage</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.#ctor(Neuroglia.K8s.ResourceControllerOptions{`0})">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.ResourceControllerOptionsBuilder`1"/>
+            </summary>
+            <param name="options">The <see cref="T:Neuroglia.K8s.ResourceControllerOptions`1"/> to configure</param>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.#ctor">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.ResourceControllerOptionsBuilder`1"/>
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.Options">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.IResourceControllerOptions`1"/> to configure
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.UseAutomaticReconciliation(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.ReconcileEvery(System.TimeSpan)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.Watch(System.Action{Neuroglia.K8s.IResourceWatcherOptionsBuilder{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.Build">
             <inheritdoc/>
         </member>
         <member name="T:Neuroglia.K8s.ResourceEvent`1">
@@ -590,6 +662,161 @@
             <inheritdoc/>
         </member>
         <member name="P:Neuroglia.K8s.ResourceEvent`1.Resource">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.ResourceWatcher`1">
+            <summary>
+            Represents the default implementation of the <see cref="T:Neuroglia.K8s.IResourceWatcher`1"/> interface.
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to listen the Kubernetes events for.</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.#ctor(Microsoft.Extensions.Logging.ILogger{Neuroglia.K8s.ResourceWatcher{`0}},k8s.IKubernetes,Neuroglia.K8s.ResourceWatcherOptions{`0})">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.IResourceWatcher`1"/>.
+            </summary>
+            <param name="logger">The service used to perform logging</param>
+            <param name="kubernetes">The service used to communicate with Kubernetes.</param>
+            <param name="options">The current <see cref="T:Neuroglia.K8s.ResourceWatcherOptions`1"/></param>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcher`1.Logger">
+            <summary>
+            Gets the service used to perform logging
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcher`1.Kubernetes">
+            <summary>
+            Gets the service used to communicate with Kubernetes
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcher`1.ResourceDefinition">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/> of the <see cref="T:Neuroglia.K8s.ICustomResource"/> type to to listen the Kubernetes events for.
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcher`1.Options">
+            <summary>
+            Gets the current <see cref="T:Neuroglia.K8s.ResourceWatcherOptions`1"/>
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcher`1.Subject">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.IResourceEvent`1"/> <see cref="T:System.Reactive.Subjects.Subject`1"/>
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.StartAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.ListenAsync">
+            <summary>
+            Starts listening for Kubernetes events concerning the specified <see cref="T:Neuroglia.K8s.ICustomResource"/> type
+            </summary>
+            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.StopAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.Subscribe(System.IObserver{Neuroglia.K8s.IResourceEvent{`0}})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.OnNext(k8s.WatchEventType,`0)">
+            <summary>
+            Handles resources events returned by the <see cref="T:k8s.IKubernetes"/> client
+            </summary>
+            <param name="type">The <see cref="T:k8s.WatchEventType"/></param>
+            <param name="resource">The watched <see cref="T:Neuroglia.K8s.ICustomResource"/></param>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.OnError(System.Exception)">
+            <summary>
+            Handles <see cref="T:System.Exception"/>s thrown during the listening loop
+            </summary>
+            <param name="ex">The <see cref="T:System.Exception"/> to handle</param>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.Dispose(System.Boolean)">
+            <summary>
+            Disposes of the <see cref="T:Neuroglia.K8s.ResourceWatcher`1"/>
+            </summary>
+            <param name="disposing">A boolean indicating whether or not the <see cref="T:Neuroglia.K8s.ResourceWatcher`1"/> is being disposed of</param>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcher`1.DisposeAsync">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.ResourceWatcherFactory">
+            <summary>
+            Represents the default implementation of the <see cref="T:Neuroglia.K8s.IResourceWatcherFactory"/> interface
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherFactory.#ctor(System.IServiceProvider)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.ResourceWatcherFactory"/>
+            </summary>
+            <param name="serviceProvider">The current <see cref="T:System.IServiceProvider"/></param>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcherFactory.ServiceProvider">
+            <summary>
+            Gets the current <see cref="T:System.IServiceProvider"/>
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherFactory.Create``1(System.Action{Neuroglia.K8s.IResourceWatcherOptionsBuilder{``0}})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.ResourceWatcherOptions`1">
+            <summary>
+            Represents the options used to configure an <see cref="T:Neuroglia.K8s.IResourceWatcher"/>
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcherOptions`1.Namespace">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcherOptions`1.LabelSelector">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcherOptions`1.FieldSelector">
+            <inheritdoc/>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcherOptions`1.Predicate">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1">
+            <summary>
+            Represents the default implementation of the <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/> interface
+            </summary>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to watch</typeparam>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1.#ctor(Neuroglia.K8s.ResourceWatcherOptions{`0})">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.ResourceWatcherOptions`1"/>
+            </summary>
+            <param name="options">The <see cref="T:Neuroglia.K8s.ResourceWatcherOptions`1"/> to configure</param>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1.#ctor">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.ResourceWatcherOptions`1"/>
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1.Options">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.ResourceWatcherOptions`1"/> to configure
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1.InCluster">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1.InNamespace(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1.WithLabel(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1.WithField(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1.When(System.Func{k8s.WatchEventType,`0,System.Boolean})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.ResourceWatcherOptionsBuilder`1.Build">
             <inheritdoc/>
         </member>
     </members>

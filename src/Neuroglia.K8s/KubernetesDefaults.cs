@@ -2,7 +2,7 @@
 {
 
     /// <summary>
-    /// Exposes constants about Kubernetes defaults
+    /// Exposes Kubernetes defaults 
     /// </summary>
     public static class KubernetesDefaults
     {
@@ -30,7 +30,6 @@
         /// </summary>
         public static class Kinds
         {
-
             /// <summary>
             /// Gets the kind of the 'Deployment' object
             /// </summary>
@@ -40,7 +39,6 @@
             /// Gets the kind of the 'Service' object
             /// </summary>
             public const string Service = "Service";
-
         }
 
         /// <summary>

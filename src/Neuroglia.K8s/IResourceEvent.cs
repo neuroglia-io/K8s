@@ -3,11 +3,11 @@
 namespace Neuroglia.K8s
 {
     /// <summary>
-    /// Defines the fundamentals of an event originating from a Kubernetes custom resource of the specified type 
+    /// Defines the fundamentals of an event originating from a <see cref="ICustomResource"/> of the specified type 
     /// </summary>
-    /// <typeparam name="TResource">The type of the custom resource the event concerns</typeparam>
+    /// <typeparam name="TResource">The type of the <see cref="ICustomResource"/> the event concerns</typeparam>
     public interface IResourceEvent<TResource>
-        where TResource : class, ICustomResource, new()
+        where TResource : class, ICustomResource
     {
 
         /// <summary>
