@@ -93,7 +93,25 @@ namespace Neuroglia.K8s
             configuration?.Invoke(optionsBuilder);
             ResourceControllerOptions<TResource> options = optionsBuilder.Build();
             services.AddSingleton(Options.Create(options));
-            services.AddHostedService<ResourceController<TResource>>();
+            services.AddSingleton<TController>();
+            services.AddSingleton<IResourceController<TResource>>(provider => provider.GetRequiredService<TController>());
+            services.AddSingleton<IHostedService>(provider => provider.GetRequiredService<TController>());
+            return services;
+        }
+
+        /// <summary>
+        /// Adds and configures a new <see cref="IResourceController{TResource}"/>
+        /// </summary>
+        /// <typeparam name="TController">The type of the <see cref="IResourceController{TResource}"/> implementation to add</typeparam>
+        /// <typeparam name="TResource">The type of <see cref="ICustomResource"/> to manage</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to configure</param>
+        /// <returns>The configured <see cref="IServiceCollection"/></returns>
+        public static IServiceCollection AddResourceController<TController, TResource>(this IServiceCollection services)
+            where TController : class, IResourceController<TResource>
+            where TResource : class, ICustomResource, new()
+        {
+            services.AddResourceController<TController, TResource>(builder => 
+                builder.ConfigureWatcher(watch => watch.InCluster()));
             return services;
         }
 

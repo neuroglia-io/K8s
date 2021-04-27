@@ -27,9 +27,9 @@ namespace Neuroglia.K8s
         /// <summary>
         /// Configures the <see cref="IResourceWatcher{TResource}"/> used by the <see cref="IResourceController{TResource}"/> to configure
         /// </summary>
-        /// <param name="wacthConfiguration">An <see cref="Action{T}"/> used to configure the <see cref="IResourceWatcher{TResource}"/> used by the <see cref="IResourceController{TResource}"/> to configure</param>
+        /// <param name="watcherConfiguration">An <see cref="Action{T}"/> used to configure the <see cref="IResourceWatcher{TResource}"/> used by the <see cref="IResourceController{TResource}"/> to configure</param>
         /// <returns>The configured <see cref="IResourceControllerOptionsBuilder{TResource}"/></returns>
-        IResourceControllerOptionsBuilder<TResource> Watch(Action<IResourceWatcherOptionsBuilder<TResource>> wacthConfiguration);
+        IResourceControllerOptionsBuilder<TResource> ConfigureWatcher(Action<IResourceWatcherOptionsBuilder<TResource>> watcherConfiguration);
 
         /// <summary>
         /// Builds the <see cref="IResourceControllerOptions{TResource}"/>

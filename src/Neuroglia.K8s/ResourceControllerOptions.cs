@@ -27,7 +27,7 @@ namespace Neuroglia.K8s
         public TimeSpan ReconciliationPeriod { get; set; }
 
         /// <inheritdoc/>
-        public Action<IResourceWatcherOptionsBuilder<TResource>> WatchConfiguration { get; set; }
+        public Action<IResourceWatcherOptionsBuilder<TResource>> WatchConfiguration { get; set; } = builder => { };
 
     }
 

@@ -50,9 +50,9 @@ namespace Neuroglia.K8s
         }
 
         /// <inheritdoc/>
-        public virtual IResourceControllerOptionsBuilder<TResource> Watch(Action<IResourceWatcherOptionsBuilder<TResource>> wacthConfiguration)
+        public virtual IResourceControllerOptionsBuilder<TResource> ConfigureWatcher(Action<IResourceWatcherOptionsBuilder<TResource>> watchConfiguration)
         {
-            this.Options.WatchConfiguration = wacthConfiguration;
+            this.Options.WatchConfiguration = watchConfiguration;
             return this;
         }
 
