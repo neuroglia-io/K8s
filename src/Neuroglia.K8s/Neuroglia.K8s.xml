@@ -178,7 +178,7 @@
             <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
             <returns>The newly created resource</returns>
         </member>
-        <member name="M:Neuroglia.K8s.IKubernetesExtensions.ListNamespacedCustomObjectAsync``1(k8s.IKubernetes,System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},System.String,System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Neuroglia.K8s.IKubernetesExtensions.ListNamespacedCustomObjectAsync``1(k8s.IKubernetes,System.String,System.String,System.String,System.String,System.Nullable{System.Boolean},System.String,System.String,System.String,System.Nullable{System.Int32},System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Lists namespaced custom objects
             </summary>
@@ -188,18 +188,22 @@
             <param name="version">The custom resource's version</param>
             <param name="namespaceParameter">The custom resource's namespace</param>
             <param name="plural">The custom resource's plural name. For TPRs this would be lowercase plural kind.</param>
+            <param name="allowWatchBookmarks">resourceVersionMatch determines how resourceVersion is applied to list calls. It is highly recommended that resourceVersionMatch be set for list calls where resourceVersion is set See https://kubernetes.io/docs/reference/using-api/api-concepts/#resource-versionsfor details. Defaults to unset</param>
             <param name="continueParameter">The continue option should be set when retrieving more results from the server.</param>
             <param name="fieldSelector">A selector to restrict the list of returned objects by their fields. Defaults to everything.</param>
             <param name="labelSelector">A selector to restrict the list of returned objects by their labels. Defaults to everything.</param>
             <param name="limit">Limit is a maximum number of responses to return for a list call.</param>
-            <param name="resourceVersion"> When specified with a watch call, shows changes that occur after that particular version of a resource.</param>
+            <param name="resourceVersion">When specified with a watch call, shows changes that occur after that particular version of a resource.</param>
+            <param name="resourceVersionMatch">allowWatchBookmarks requests watch events with type "BOOKMARK". Servers that do not implement bookmarks may ignore this flag and bookmarks are sent at the server's discretion. 
+            Clients should not assume bookmarks are returned at any specific interval, nor may they assume the server will send any BOOKMARK event during a session. If this is not a watch, this field is ignored. 
+            If the feature gate WatchBookmarks is not enabled in apiserver, this field is ignored.</param>
             <param name="timeoutSeconds">Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.</param>
             <param name="watch"> Watch for changes to the described resources and return them as a stream of add, update, and remove notifications.</param>
             <param name="pretty">A boolean indicating whether or not to pretty print the output</param>
             <param name="cancellationToken">A <see cref="T:System.Threading.CancellationToken"/></param>
             <returns>A new <see cref="T:k8s.Models.KubernetesList`1"/> containing custom objects of the specified type</returns>
         </member>
-        <member name="M:Neuroglia.K8s.IKubernetesExtensions.ListClusterCustomObjectAsync``1(k8s.IKubernetes,System.String,System.String,System.String,System.String,System.String,System.String,System.Nullable{System.Int32},System.String,System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Boolean,System.Threading.CancellationToken)">
+        <member name="M:Neuroglia.K8s.IKubernetesExtensions.ListClusterCustomObjectAsync``1(k8s.IKubernetes,System.String,System.String,System.String,System.Nullable{System.Boolean},System.String,System.String,System.String,System.Nullable{System.Int32},System.String,System.String,System.Nullable{System.Int32},System.Nullable{System.Boolean},System.Boolean,System.Threading.CancellationToken)">
             <summary>
             Lists cluster-wide custom objects
             </summary>
@@ -208,11 +212,15 @@
             <param name="group">The custom resource's group name</param>
             <param name="version">The custom resource's version</param>
             <param name="plural">The custom resource's plural name. For TPRs this would be lowercase plural kind.</param>
+            <param name="allowWatchBookmarks">resourceVersionMatch determines how resourceVersion is applied to list calls. It is highly recommended that resourceVersionMatch be set for list calls where resourceVersion is set See https://kubernetes.io/docs/reference/using-api/api-concepts/#resource-versionsfor details. Defaults to unset</param>
             <param name="continueParameter">The continue option should be set when retrieving more results from the server.</param>
             <param name="fieldSelector">A selector to restrict the list of returned objects by their fields. Defaults to everything.</param>
             <param name="labelSelector">A selector to restrict the list of returned objects by their labels. Defaults to everything.</param>
             <param name="limit">Limit is a maximum number of responses to return for a list call.</param>
             <param name="resourceVersion"> When specified with a watch call, shows changes that occur after that particular version of a resource.</param>
+            <param name="resourceVersionMatch">allowWatchBookmarks requests watch events with type "BOOKMARK". Servers that do not implement bookmarks may ignore this flag and bookmarks are sent at the server's discretion. 
+            Clients should not assume bookmarks are returned at any specific interval, nor may they assume the server will send any BOOKMARK event during a session. If this is not a watch, this field is ignored. 
+            If the feature gate WatchBookmarks is not enabled in apiserver, this field is ignored.</param>
             <param name="timeoutSeconds">Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.</param>
             <param name="watch"> Watch for changes to the described resources and return them as a stream of add, update, and remove notifications.</param>
             <param name="pretty">A boolean indicating whether or not to pretty print the output</param>

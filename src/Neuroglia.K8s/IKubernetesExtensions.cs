@@ -53,21 +53,26 @@ namespace Neuroglia.K8s
         /// <param name="version">The custom resource's version</param>
         /// <param name="namespaceParameter">The custom resource's namespace</param>
         /// <param name="plural">The custom resource's plural name. For TPRs this would be lowercase plural kind.</param>
+        /// <param name="allowWatchBookmarks">resourceVersionMatch determines how resourceVersion is applied to list calls. It is highly recommended that resourceVersionMatch be set for list calls where resourceVersion is set See https://kubernetes.io/docs/reference/using-api/api-concepts/#resource-versionsfor details. Defaults to unset</param>
         /// <param name="continueParameter">The continue option should be set when retrieving more results from the server.</param>
         /// <param name="fieldSelector">A selector to restrict the list of returned objects by their fields. Defaults to everything.</param>
         /// <param name="labelSelector">A selector to restrict the list of returned objects by their labels. Defaults to everything.</param>
         /// <param name="limit">Limit is a maximum number of responses to return for a list call.</param>
-        /// <param name="resourceVersion"> When specified with a watch call, shows changes that occur after that particular version of a resource.</param>
+        /// <param name="resourceVersion">When specified with a watch call, shows changes that occur after that particular version of a resource.</param>
+        /// <param name="resourceVersionMatch">allowWatchBookmarks requests watch events with type "BOOKMARK". Servers that do not implement bookmarks may ignore this flag and bookmarks are sent at the server's discretion. 
+        /// Clients should not assume bookmarks are returned at any specific interval, nor may they assume the server will send any BOOKMARK event during a session. If this is not a watch, this field is ignored. 
+        /// If the feature gate WatchBookmarks is not enabled in apiserver, this field is ignored.</param>
         /// <param name="timeoutSeconds">Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.</param>
         /// <param name="watch"> Watch for changes to the described resources and return them as a stream of add, update, and remove notifications.</param>
         /// <param name="pretty">A boolean indicating whether or not to pretty print the output</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/></param>
         /// <returns>A new <see cref="KubernetesList{T}"/> containing custom objects of the specified type</returns>
-        public static async Task<KubernetesList<T>> ListNamespacedCustomObjectAsync<T>(this IKubernetes kubernetes, string group, string version, string namespaceParameter, string plural, string continueParameter = null, string fieldSelector = null,
-            string labelSelector = null, int? limit = null, string resourceVersion = null, int? timeoutSeconds = null, bool? watch = null, bool pretty = false, CancellationToken cancellationToken = default)
+        public static async Task<KubernetesList<T>> ListNamespacedCustomObjectAsync<T>(this IKubernetes kubernetes, string group, string version, string namespaceParameter, string plural, bool? allowWatchBookmarks = null, string continueParameter = null, string fieldSelector = null,
+            string labelSelector = null, int? limit = null, string resourceVersion = null, string resourceVersionMatch = null, int? timeoutSeconds = null, bool? watch = null, bool pretty = false, CancellationToken cancellationToken = default)
             where T : class, IKubernetesObject
         {
-            return await kubernetes.ListNamespacedCustomObjectAsync<T>(group, version, namespaceParameter, plural, continueParameter, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch, pretty, cancellationToken);
+            JObject result = (JObject)await kubernetes.ListNamespacedCustomObjectAsync(group, version, namespaceParameter, plural, allowWatchBookmarks, continueParameter, fieldSelector, labelSelector, limit, resourceVersion, resourceVersionMatch, timeoutSeconds, watch, pretty ? "true" : null, cancellationToken);
+            return result.ToObject<KubernetesList<T>>();
         }
 
         /// <summary>
@@ -78,21 +83,26 @@ namespace Neuroglia.K8s
         /// <param name="group">The custom resource's group name</param>
         /// <param name="version">The custom resource's version</param>
         /// <param name="plural">The custom resource's plural name. For TPRs this would be lowercase plural kind.</param>
+        /// <param name="allowWatchBookmarks">resourceVersionMatch determines how resourceVersion is applied to list calls. It is highly recommended that resourceVersionMatch be set for list calls where resourceVersion is set See https://kubernetes.io/docs/reference/using-api/api-concepts/#resource-versionsfor details. Defaults to unset</param>
         /// <param name="continueParameter">The continue option should be set when retrieving more results from the server.</param>
         /// <param name="fieldSelector">A selector to restrict the list of returned objects by their fields. Defaults to everything.</param>
         /// <param name="labelSelector">A selector to restrict the list of returned objects by their labels. Defaults to everything.</param>
         /// <param name="limit">Limit is a maximum number of responses to return for a list call.</param>
         /// <param name="resourceVersion"> When specified with a watch call, shows changes that occur after that particular version of a resource.</param>
+        /// <param name="resourceVersionMatch">allowWatchBookmarks requests watch events with type "BOOKMARK". Servers that do not implement bookmarks may ignore this flag and bookmarks are sent at the server's discretion. 
+        /// Clients should not assume bookmarks are returned at any specific interval, nor may they assume the server will send any BOOKMARK event during a session. If this is not a watch, this field is ignored. 
+        /// If the feature gate WatchBookmarks is not enabled in apiserver, this field is ignored.</param>
         /// <param name="timeoutSeconds">Timeout for the list/watch call. This limits the duration of the call, regardless of any activity or inactivity.</param>
         /// <param name="watch"> Watch for changes to the described resources and return them as a stream of add, update, and remove notifications.</param>
         /// <param name="pretty">A boolean indicating whether or not to pretty print the output</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/></param>
         /// <returns>A new <see cref="KubernetesList{T}"/> containing custom objects of the specified type</returns>
-        public static async Task<KubernetesList<T>> ListClusterCustomObjectAsync<T>(this IKubernetes kubernetes, string group, string version, string plural, string continueParameter = null, string fieldSelector = null,
-            string labelSelector = null, int? limit = null, string resourceVersion = null, int? timeoutSeconds = null, bool? watch = null, bool pretty = false, CancellationToken cancellationToken = default)
+        public static async Task<KubernetesList<T>> ListClusterCustomObjectAsync<T>(this IKubernetes kubernetes, string group, string version, string plural, bool? allowWatchBookmarks = null, string continueParameter = null, string fieldSelector = null,
+            string labelSelector = null, int? limit = null, string resourceVersion = null, string resourceVersionMatch = null, int? timeoutSeconds = null, bool? watch = null, bool pretty = false, CancellationToken cancellationToken = default)
             where T : class, IKubernetesObject
         {
-            return await kubernetes.ListClusterCustomObjectAsync<T>(group, version, plural, continueParameter, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch, pretty, cancellationToken);
+            JObject result = (JObject)await kubernetes.ListClusterCustomObjectAsync(group, version, plural, allowWatchBookmarks, continueParameter, fieldSelector, labelSelector, limit, resourceVersion, resourceVersionMatch, timeoutSeconds, watch, pretty ? "true" : null, cancellationToken);
+            return result.ToObject<KubernetesList<T>>();
         }
 
     }
