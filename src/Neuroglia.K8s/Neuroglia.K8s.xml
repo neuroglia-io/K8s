@@ -283,11 +283,11 @@
             <param name="period">A <see cref="T:System.TimeSpan"/> representing the duration after which the <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/> will periodically auto-reconcile</param>
             <returns>The configured <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/></returns>
         </member>
-        <member name="M:Neuroglia.K8s.IResourceControllerOptionsBuilder`1.Watch(System.Action{Neuroglia.K8s.IResourceWatcherOptionsBuilder{`0}})">
+        <member name="M:Neuroglia.K8s.IResourceControllerOptionsBuilder`1.ConfigureWatcher(System.Action{Neuroglia.K8s.IResourceWatcherOptionsBuilder{`0}})">
             <summary>
             Configures the <see cref="T:Neuroglia.K8s.IResourceWatcher`1"/> used by the <see cref="T:Neuroglia.K8s.IResourceController`1"/> to configure
             </summary>
-            <param name="wacthConfiguration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IResourceWatcher`1"/> used by the <see cref="T:Neuroglia.K8s.IResourceController`1"/> to configure</param>
+            <param name="watcherConfiguration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IResourceWatcher`1"/> used by the <see cref="T:Neuroglia.K8s.IResourceController`1"/> to configure</param>
             <returns>The configured <see cref="T:Neuroglia.K8s.IResourceControllerOptionsBuilder`1"/></returns>
         </member>
         <member name="M:Neuroglia.K8s.IResourceControllerOptionsBuilder`1.Build">
@@ -468,6 +468,15 @@
             <param name="configuration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IResourceController"/> to add</param>
             <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
         </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddResourceController``2(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds and configures a new <see cref="T:Neuroglia.K8s.IResourceController`1"/>
+            </summary>
+            <typeparam name="TController">The type of the <see cref="T:Neuroglia.K8s.IResourceController`1"/> implementation to add</typeparam>
+            <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to manage</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
         <member name="T:Neuroglia.K8s.KubernetesDefaults">
             <summary>
             Exposes Kubernetes defaults 
@@ -639,7 +648,7 @@
         <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.ReconcileEvery(System.TimeSpan)">
             <inheritdoc/>
         </member>
-        <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.Watch(System.Action{Neuroglia.K8s.IResourceWatcherOptionsBuilder{`0}})">
+        <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.ConfigureWatcher(System.Action{Neuroglia.K8s.IResourceWatcherOptionsBuilder{`0}})">
             <inheritdoc/>
         </member>
         <member name="M:Neuroglia.K8s.ResourceControllerOptionsBuilder`1.Build">

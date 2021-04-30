@@ -67,8 +67,7 @@ namespace Neuroglia.K8s
             string labelSelector = null, int? limit = null, string resourceVersion = null, int? timeoutSeconds = null, bool? watch = null, bool pretty = false, CancellationToken cancellationToken = default)
             where T : class, IKubernetesObject
         {
-            JObject result = (JObject)await kubernetes.ListNamespacedCustomObjectAsync(group, version, namespaceParameter, plural, continueParameter, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch, pretty ? "true" : null, cancellationToken);
-            return result.ToObject<KubernetesList<T>>();
+            return await kubernetes.ListNamespacedCustomObjectAsync<T>(group, version, namespaceParameter, plural, continueParameter, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch, pretty, cancellationToken);
         }
 
         /// <summary>
@@ -93,8 +92,7 @@ namespace Neuroglia.K8s
             string labelSelector = null, int? limit = null, string resourceVersion = null, int? timeoutSeconds = null, bool? watch = null, bool pretty = false, CancellationToken cancellationToken = default)
             where T : class, IKubernetesObject
         {
-            JObject result = (JObject)await kubernetes.ListClusterCustomObjectAsync(group, version, plural, continueParameter, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch, pretty ? "true" : null, cancellationToken);
-            return result.ToObject<KubernetesList<T>>();
+            return await kubernetes.ListClusterCustomObjectAsync<T>(group, version, plural, continueParameter, fieldSelector, labelSelector, limit, resourceVersion, timeoutSeconds, watch, pretty, cancellationToken);
         }
 
     }
