@@ -115,6 +115,44 @@ namespace Neuroglia.K8s
             return services;
         }
 
+        /// <summary>
+        /// Adds a <see cref="IEventListenerFactory"/>
+        /// </summary>
+        /// <typeparam name="TFactory">The type of the <see cref="IEventListenerFactory"/> to add</typeparam>
+        /// <param name="services">The <see cref="IServiceCollection"/> to configure</param>
+        /// <returns>The configured <see cref="IServiceCollection"/></returns>
+        public static IServiceCollection AddEventListenerFactory<TFactory>(this IServiceCollection services)
+            where TFactory : class, IEventListenerFactory
+        {
+            services.TryAddSingleton<IEventListenerFactory, TFactory>();
+            return services;
+        }
+
+        /// <summary>
+        /// Adds the default <see cref="IEventListenerFactory"/>
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> to configure</param>
+        /// <returns>The configured <see cref="IServiceCollection"/></returns>
+        public static IServiceCollection AddEventListenerFactory(this IServiceCollection services)
+        {
+            services.AddEventListenerFactory<EventListenerFactory>();
+            return services;
+        }
+
+        /// <summary>
+        /// Adds and configures a new <see cref="IEventListener"/>
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/> to configure</param>
+        /// <param name="configuration">An <see cref="Action{T}"/> used to configure the <see cref="IEventListener"/></param>
+        /// <returns>The configured <see cref="IServiceCollection"/></returns>
+        public static IServiceCollection AddEventListener(this IServiceCollection services, Action<IEventListenerOptionsBuilder> configuration)
+        {
+            services.AddEventListenerFactory();
+            services.AddSingleton(provider => provider.GetRequiredService<IEventListenerFactory>().Create(configuration));
+            services.AddSingleton<IHostedService>(provider => provider.GetRequiredService<IEventListener>());
+            return services;
+        }
+
     }
 
 }

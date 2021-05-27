@@ -85,6 +85,145 @@
         <member name="P:Neuroglia.K8s.CustomResourceDefinition.Version">
             <inheritdoc/>
         </member>
+        <member name="T:Neuroglia.K8s.EventListener">
+            <summary>
+            Represents the default implementation of the <see cref="T:Neuroglia.K8s.IEventListener"/> interface
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListener.#ctor(Microsoft.Extensions.Logging.ILogger{Neuroglia.K8s.EventListener},k8s.IKubernetes,Neuroglia.K8s.EventListenerOptions)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.IEventListener"/>.
+            </summary>
+            <param name="logger">The service used to perform logging</param>
+            <param name="kubernetes">The service used to communicate with Kubernetes.</param>
+            <param name="options">The options used to configure the <see cref="T:Neuroglia.K8s.EventListener"/></param>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListener.Logger">
+            <summary>
+            Gets the service used to perform logging
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListener.Kubernetes">
+            <summary>
+            Gets the service used to communicate with the Kubernetes API
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListener.Options">
+            <summary>
+            Gets the options used to configure the <see cref="T:Neuroglia.K8s.EventListener"/>
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListener.Subject">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.IEventListener"/>'s <see cref="T:System.Reactive.Subjects.Subject`1"/>
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListener.Subscribe(System.IObserver{k8s.Models.Corev1Event})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListener.ExecuteAsync(System.Threading.CancellationToken)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListener.ListenAsync">
+            <summary>
+            Starts listening for Kubernetes <see cref="T:k8s.Models.Corev1Event"/>s
+            </summary>
+            <returns>A new awaitable <see cref="T:System.Threading.Tasks.Task"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListener.OnNext(k8s.WatchEventType,k8s.Models.Corev1Event)">
+            <summary>
+            Handles resources events returned by the <see cref="T:k8s.IKubernetes"/> client
+            </summary>
+            <param name="type">The <see cref="T:k8s.WatchEventType"/></param>
+            <param name="e">The watched <see cref="T:k8s.Models.Corev1Event"/></param>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListener.OnError(System.Exception)">
+            <summary>
+            Handles <see cref="T:System.Exception"/>s thrown during the listening loop
+            </summary>
+            <param name="ex">The <see cref="T:System.Exception"/> to handle</param>
+        </member>
+        <member name="T:Neuroglia.K8s.EventListenerFactory">
+            <summary>
+            Represents the default implementation of the <see cref="T:Neuroglia.K8s.IEventListener"/> interface
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerFactory.#ctor(System.IServiceProvider)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.EventListenerFactory"/>
+            </summary>
+            <param name="serviceProvider">The current <see cref="T:System.IServiceProvider"/></param>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListenerFactory.ServiceProvider">
+            <summary>
+            Gets the current <see cref="T:System.IServiceProvider"/>
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerFactory.Create(System.Action{Neuroglia.K8s.IEventListenerOptionsBuilder})">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.EventListenerOptions">
+            <summary>
+            Represents the options used to configure an <see cref="T:Neuroglia.K8s.IEventListener"/>
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListenerOptions.Namespace">
+            <summary>
+            Gets the namespace in which to listen for <see cref="T:k8s.Models.Corev1Event"/>s
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListenerOptions.LabelSelector">
+            <summary>
+            Gets the label selector by which to filter the <see cref="T:k8s.Models.Corev1Event"/>s to listen for
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListenerOptions.FieldSelector">
+            <summary>
+            Gets the field selector by which to filter the <see cref="T:k8s.Models.Corev1Event"/>s to listen for
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListenerOptions.Predicate">
+            <inheritdoc/>
+        </member>
+        <member name="T:Neuroglia.K8s.EventListenerOptionsBuilder">
+            <summary>
+            Represents the default implementation of the <see cref="T:Neuroglia.K8s.IEventListenerOptionsBuilder"/> interface
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerOptionsBuilder.#ctor(Neuroglia.K8s.EventListenerOptions)">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.EventListenerOptionsBuilder"/>
+            </summary>
+            <param name="options">The <see cref="T:Neuroglia.K8s.EventListenerOptions"/> to configure</param>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerOptionsBuilder.#ctor">
+            <summary>
+            Initializes a new <see cref="T:Neuroglia.K8s.EventListenerOptionsBuilder"/>
+            </summary>
+        </member>
+        <member name="P:Neuroglia.K8s.EventListenerOptionsBuilder.Options">
+            <summary>
+            Gets the <see cref="T:Neuroglia.K8s.EventListenerOptions"/> to configure
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerOptionsBuilder.InCluster">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerOptionsBuilder.InNamespace(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerOptionsBuilder.WithLabel(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerOptionsBuilder.WithField(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerOptionsBuilder.When(System.Func{k8s.WatchEventType,k8s.Models.Corev1Event,System.Boolean})">
+            <inheritdoc/>
+        </member>
+        <member name="M:Neuroglia.K8s.EventListenerOptionsBuilder.Build">
+            <inheritdoc/>
+        </member>
         <member name="T:Neuroglia.K8s.ICustomResource">
             <summary>
             Defines the fundamentals of a <see href="https://kubernetes.io/docs/tasks/extend-kubernetes/custom-resources/custom-resource-definitions/">Kubernetes Custom Resource Definition (CRD)</see> instance
@@ -149,6 +288,68 @@
             <summary>
             Gets the <see cref="T:Neuroglia.K8s.ICustomResourceDefinition"/>'s version
             </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.IEventListener">
+            <summary>
+            Defines the fundamentals of a service used to listen to Kubernetes <see cref="T:k8s.Models.Corev1Event"/>s
+            </summary>
+        </member>
+        <member name="T:Neuroglia.K8s.IEventListenerFactory">
+            <summary>
+            Defines the fundamentals of a service used to create <see cref="T:Neuroglia.K8s.IEventListener"/>s
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.IEventListenerFactory.Create(System.Action{Neuroglia.K8s.IEventListenerOptionsBuilder})">
+            <summary>
+            Create a new <see cref="T:Neuroglia.K8s.IEventListener"/>
+            </summary>
+            <param name="configuration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IEventListener"/> to create</param>
+            <returns>A new <see cref="T:Neuroglia.K8s.IEventListener"/></returns>
+        </member>
+        <member name="T:Neuroglia.K8s.IEventListenerOptionsBuilder">
+            <summary>
+            Defines the fundamentals of a service used to build <see cref="T:Neuroglia.K8s.IEventListener"/>s
+            </summary>
+        </member>
+        <member name="M:Neuroglia.K8s.IEventListenerOptionsBuilder.InCluster">
+            <summary>
+            Configures the <see cref="T:Neuroglia.K8s.IEventListener"/> to watch for <see cref="T:k8s.Models.Corev1Event"/>s cluster-wide. Will ignore the namespace, if it has been set.
+            </summary>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IEventListenerOptionsBuilder"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IEventListenerOptionsBuilder.InNamespace(System.String)">
+            <summary>
+            Sets the namespace in which to watch the <see cref="T:k8s.Models.Corev1Event"/>s. If the namespace is not set, the <see cref="T:Neuroglia.K8s.IEventListener"/> will watch for <see cref="T:k8s.Models.Corev1Event"/>s cluster-wide
+            </summary>
+            <param name="namespace">The namespace to watch the <see cref="T:k8s.Models.Corev1Event"/>s in</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IEventListenerOptionsBuilder"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IEventListenerOptionsBuilder.WithLabel(System.String)">
+            <summary>
+            Sets the label selector by which to filter the <see cref="T:k8s.Models.Corev1Event"/>s to watch
+            </summary>
+            <param name="selector">The label selector (ex: environment = production) to use</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IEventListenerOptionsBuilder"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IEventListenerOptionsBuilder.WithField(System.String)">
+            <summary>
+            Sets the field selector by which to filter the <see cref="T:k8s.Models.Corev1Event"/>s to watch
+            </summary>
+            <param name="selector">The field selector (ex: metadata.name) to use</param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IEventListenerOptionsBuilder"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IEventListenerOptionsBuilder.When(System.Func{k8s.WatchEventType,k8s.Models.Corev1Event,System.Boolean})">
+            <summary>
+            Sets a predicate used to determine whether or not to handle the specified <see cref="T:k8s.Models.Corev1Event"/>'s <see cref="T:k8s.WatchEventType"/>
+            </summary>
+            <param name="predicate">A predicate <see cref="T:System.Func`3"/> used to determine whether or not to handle the specified <see cref="T:k8s.Models.Corev1Event"/>'s <see cref="T:k8s.WatchEventType"/></param>
+            <returns>The configured <see cref="T:Neuroglia.K8s.IEventListenerOptionsBuilder"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IEventListenerOptionsBuilder.Build">
+            <summary>
+            Builds the <see cref="T:Neuroglia.K8s.EventListenerOptions"/>
+            </summary>
+            <returns>A new <see cref="T:Neuroglia.K8s.EventListenerOptions"/></returns>
         </member>
         <member name="T:Neuroglia.K8s.IKubernetesExtensions">
             <summary>
@@ -483,6 +684,29 @@
             <typeparam name="TController">The type of the <see cref="T:Neuroglia.K8s.IResourceController`1"/> implementation to add</typeparam>
             <typeparam name="TResource">The type of <see cref="T:Neuroglia.K8s.ICustomResource"/> to manage</typeparam>
             <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddEventListenerFactory``1(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds a <see cref="T:Neuroglia.K8s.IEventListenerFactory"/>
+            </summary>
+            <typeparam name="TFactory">The type of the <see cref="T:Neuroglia.K8s.IEventListenerFactory"/> to add</typeparam>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddEventListenerFactory(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            Adds the default <see cref="T:Neuroglia.K8s.IEventListenerFactory"/>
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
+        </member>
+        <member name="M:Neuroglia.K8s.IServiceCollectionExtensions.AddEventListener(Microsoft.Extensions.DependencyInjection.IServiceCollection,System.Action{Neuroglia.K8s.IEventListenerOptionsBuilder})">
+            <summary>
+            Adds and configures a new <see cref="T:Neuroglia.K8s.IEventListener"/>
+            </summary>
+            <param name="services">The <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/> to configure</param>
+            <param name="configuration">An <see cref="T:System.Action`1"/> used to configure the <see cref="T:Neuroglia.K8s.IEventListener"/></param>
             <returns>The configured <see cref="T:Microsoft.Extensions.DependencyInjection.IServiceCollection"/></returns>
         </member>
         <member name="T:Neuroglia.K8s.KubernetesDefaults">

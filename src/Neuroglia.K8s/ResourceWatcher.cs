@@ -83,10 +83,8 @@ namespace Neuroglia.K8s
             if (this._ExecutingTask != null
                 && this._CancellationTokenSource != null)
                 this._CancellationTokenSource.Cancel();
-            this._CancellationTokenSource = new CancellationTokenSource();
-            this.Logger.LogInformation("Starting async...");
-            this._ExecutingTask = Task.Run(async () => await this.ListenAsync(), cancellationToken);
-            this.Logger.LogInformation("Started async");
+            this._CancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            this._ExecutingTask = Task.Run(async () => await this.ListenAsync(), this._CancellationTokenSource.Token);
             return Task.CompletedTask;
         }
 
@@ -100,8 +98,8 @@ namespace Neuroglia.K8s
             {
                 try
                 {
-                    CancellationTokenSource operationCancellationTokenSource = new();
-                    CancellationTokenSource linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(this._CancellationTokenSource.Token, operationCancellationTokenSource.Token);
+                    using CancellationTokenSource operationCancellationTokenSource = new();
+                    using CancellationTokenSource linkedCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(this._CancellationTokenSource.Token, operationCancellationTokenSource.Token);
                     HttpOperationResponse<object> operationResponse;
                     if (string.IsNullOrWhiteSpace(this.Options.Namespace))
                     {
@@ -113,27 +111,30 @@ namespace Neuroglia.K8s
                         this.Logger.LogDebug("Creating a new watcher for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
                         operationResponse = await this.Kubernetes.ListNamespacedCustomObjectWithHttpMessagesAsync(this.ResourceDefinition.Group, this.ResourceDefinition.Version, this.Options.Namespace, this.ResourceDefinition.Plural, fieldSelector: this.Options.FieldSelector, watch: true, cancellationToken: linkedCancellationTokenSource.Token).ConfigureAwait(false);
                     }
-                    using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext,
+                    using (operationResponse)
+                    {
+                        using (Watcher<TResource> watcher = operationResponse.Watch<TResource, object>(this.OnNext,
                         (ex) =>
                         {
-                            this.Logger.LogError($"An exception occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options, ex.ToString());
+                            this.Logger.LogError($"An exception occured while watching over the CRD of kind '{{crdKind}}' with API version '{{apiVersion}}' in namespace '{{namespace}}:{Environment.NewLine}{{ex}}'. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace, ex.ToString());
                             this.OnError(ex);
                             operationCancellationTokenSource.Cancel();
                         },
                         () =>
                         {
-                            this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
+                            this.Logger.LogInformation("The connection of the event watcher for CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}' has been closed. Reconnecting...", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
                             operationCancellationTokenSource.Cancel();
                         }))
-                    {
-                        if (string.IsNullOrWhiteSpace(this.Options.Namespace))
-                            this.Logger.LogInformation("Started watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
-                        else
-                            this.Logger.LogInformation("Started watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in cluster.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
-                        while (!this._CancellationTokenSource.IsCancellationRequested
-                            && !linkedCancellationTokenSource.IsCancellationRequested)
                         {
+                            if (string.IsNullOrWhiteSpace(this.Options.Namespace))
+                                this.Logger.LogInformation("Started watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
+                            else
+                                this.Logger.LogInformation("Started watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in cluster.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
+                            while (!this._CancellationTokenSource.IsCancellationRequested
+                                && !linkedCancellationTokenSource.IsCancellationRequested)
+                            {
 
+                            }
                         }
                     }
                 }
@@ -149,7 +150,7 @@ namespace Neuroglia.K8s
                 }
             }
             this.Subject?.OnCompleted();
-            this.Logger.LogDebug("Stopped watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options);
+            this.Logger.LogDebug("Stopped watching for events on CRD of kind '{crdKind}' with API version '{apiVersion}' in namespace '{namespace}'.", this.ResourceDefinition.Kind, this.ResourceDefinition.ApiVersion, this.Options.Namespace);
         }
 
         /// <inheritdoc/>
